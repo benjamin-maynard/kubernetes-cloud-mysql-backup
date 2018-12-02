@@ -53,9 +53,25 @@ An IAM Users should be created, with API Credentials. An example Policy to attac
 
 ## Example Kubernetes Cronjob
 
-An example of how to schedule this container in Kubernetes as a cronjob is below. This would configure a database backup to run each day at 01:00am.
+An example of how to schedule this container in Kubernetes as a cronjob is below. This would configure a database backup to run each day at 01:00am. The AWS Secret Access Key, and Target Database Password are stored in secrets.
 
 ```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: AWS_SECRET_ACCESS_KEY
+type: Opaque
+data:
+  aws_secret_access_key: <AWS Secret Access Key>
+--
+apiVersion: v1
+kind: Secret
+metadata:
+  name: TARGET_DATABASE_PASSWORD
+type: Opaque
+data:
+  database_password: <Your Database Password>
+--
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -76,8 +92,8 @@ spec:
               - name: AWS_SECRET_ACCESS_KEY
                 valueFrom:
                    secretKeyRef:
-                     name: <Your AWS Secrey Key Kubernetes Secret Name>
-                     key: <Your AWS Secrey Key Kubernetes Secret Field>
+                     name: AWS_SECRET_ACCESS_KEY
+                     key: aws_secret_access_key
               - name: AWS_DEFAULT_REGION
                 value: "<Your S3 Bucket Region>"
               - name: AWS_BUCKET_NAME
@@ -95,7 +111,7 @@ spec:
               - name: TARGET_DATABASE_PASSWORD
                 valueFrom:
                    secretKeyRef:
-                     name: <Your Database Password Kubernetes Secret Name>
-                     key: <Your Database Password Kubernetes Field Name>
+                     name: TARGET_DATABASE_PASSWORD
+                     key: database_password
           restartPolicy: OnFailure
 ```
