@@ -50,3 +50,52 @@ An IAM Users should be created, with API Credentials. An example Policy to attac
     ]
 }
 ```
+
+## Example Kubernetes Cronjob
+
+An example of how to schedule this container in Kubernetes as a cronjob is below. This would configure a database backup to run each day at 01:00am.
+
+```
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: my-database-backup
+spec:
+  schedule: "0 01 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: my-database-backup
+            image: <image location>
+            imagePullPolicy: Always
+            env:
+              - name: AWS_ACCESS_KEY_ID
+                value: "<Your Access Key>"
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                   secretKeyRef:
+                     name: <Your AWS Secrey Key Kubernetes Secret Name>
+                     key: <Your AWS Secrey Key Kubernetes Secret Field>
+              - name: AWS_DEFAULT_REGION
+                value: "<Your S3 Bucket Region>"
+              - name: AWS_BUCKET_NAME
+                value: "<Your S3 Bucket Name>"
+              - name: AWS_BUCKET_BACKUP_PATH
+                value: "<Your S3 Bucket Backup Path>"
+              - name: AWS_BUCCKET_BACKUP_NAME
+                value: "<Your Backup File Name.sql>"
+              - name: TARGET_DATABASE_HOST
+                value: "<Your Target Database Host>"
+              - name: TARGET_DATABASE_NAME
+                value: "<Your Target Database Name>"
+              - name: TARGET_DATABASE_USER
+                value: "<Your Target Database Username>"
+              - name: TARGET_DATABASE_PASSWORD
+                valueFrom:
+                   secretKeyRef:
+                     name: <Your Database Password Kubernetes Secret Name>
+                     key: <Your Database Password Kubernetes Field Name>
+          restartPolicy: OnFailure
+```
