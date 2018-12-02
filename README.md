@@ -37,7 +37,7 @@ An IAM Users should be created, with API Credentials. An example Policy to attac
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": "s3:ListBucket",
-            "Resource": "arn:aws:s3:::database.backup.benjamin.maynard.io"
+            "Resource": "arn:aws:s3:::<BUCKET NAME>"
         },
         {
             "Sid": "VisualEditor1",
@@ -45,7 +45,7 @@ An IAM Users should be created, with API Credentials. An example Policy to attac
             "Action": [
                 "s3:PutObject"
             ],
-            "Resource": "arn:aws:s3:::database.backup.benjamin.maynard.io/*"
+            "Resource": "arn:aws:s3:::<BUCKET NAME>/*"
         }
     ]
 }
