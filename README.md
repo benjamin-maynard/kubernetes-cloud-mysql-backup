@@ -1,10 +1,10 @@
 # aws-database-backup
 
-aws-database backup is a container image based from Alpine Linux. This container is designed to run in Kubernetes as a cronjob to perform automatic backups of databases to Amazon S3.
+aws-database backup is a container image based from Alpine Linux. This container is designed to run in Kubernetes as a cronjob to perform automatic backups of MySQL databases to Amazon S3.
 
 This container was made to suit my own specific needs, and so is fairly limited in terms of configuration options. As of now, it performs a full database dump using the `mysqldump` command, and uploads it to an S3 Bucket specificed via environment variables. A full list of configuration environment variables are listed below.
 
-Over time, this will likely be adapted to support more features and functionality.
+Over time, this will likely be updated to support more features and functionality.
 
 ## Environment Variables
 
