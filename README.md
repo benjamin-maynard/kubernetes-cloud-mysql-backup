@@ -105,6 +105,8 @@ spec:
                 value: "<Your Backup File Name.sql>"
               - name: TARGET_DATABASE_HOST
                 value: "<Your Target Database Host>"
+              - name: TARGET_DATABASE_PORT
+                value: "<Your Target Database Port>"
               - name: TARGET_DATABASE_NAME
                 value: "<Your Target Database Name>"
               - name: TARGET_DATABASE_USER
