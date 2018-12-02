@@ -84,7 +84,7 @@ spec:
         spec:
           containers:
           - name: my-database-backup
-            image: <image location>
+            image: benjaminmaynard/aws-database-backup
             imagePullPolicy: Always
             env:
               - name: AWS_ACCESS_KEY_ID
