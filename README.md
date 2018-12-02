@@ -22,7 +22,7 @@ The following environment variables are required by aws-database-backup.
 | TARGET_DATABASE_PORT        | Port MySQL is listening on.                              |
 | TARGET_DATABASE_NAME        | Name of the database to dump.                            |
 | TARGET_DATABASE_USER        | Username to authenticate to the database with.           |
-| TARGET_DATABASE_PASSWORD    | Password to authenticate to the database with.           |
+| TARGET_DATABASE_PASSWORD    | Password to authenticate to the database with. Should be configured using a Secret in Kubernetes. |
 
 ## Configuring the S3 Bucket & AWS IAM User
 
