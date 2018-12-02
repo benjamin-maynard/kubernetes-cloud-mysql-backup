@@ -19,6 +19,7 @@ The following environment variables are required by aws-database-backup.
 | AWS_BUCKET_BACKUP_PATH      | Path the backup file should be saved to in S3. E.g. `/database/myblog/backups/`. **Requires the trailing / and should not include the file name.**                                                             |
 | AWS_BUCCKET_BACKUP_NAME     | File name of the backup file. E.g. `database_dump.sql`.  |
 | TARGET_DATABASE_HOST        | Hostname or IP address of the MySQL Host.                |
+| TARGET_DATABASE_PORT        | Port MySQL is listening on.                              |
 | TARGET_DATABASE_NAME        | Name of the database to dump.                            |
 | TARGET_DATABASE_USER        | Username to authenticate to the database with.           |
 | TARGET_DATABASE_PASSWORD    | Password to authenticate to the database with.           |
