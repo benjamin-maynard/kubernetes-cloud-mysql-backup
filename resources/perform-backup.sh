@@ -11,21 +11,37 @@ then
     then
         echo -e "Database backup successfully uploaded for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S')."
     else
-        echo -e "Database backup failed to upload for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput"
+        echo -e "Database backup failed to upload for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/aws-database-backup.log
         has_failed=true
     fi
 
 else
-    echo -e "Database backup FAILED for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput"
+    echo -e "Database backup FAILED for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput" | tee -a /tmp/aws-database-backup.log
     has_failed=true
 fi
 
 
+logcontents=`cat /tmp/aws-database-backup.log`
+
 
 if [ "$has_failed" = true ]
 then
+
+    if [ "$SLACK_ENABLED" = true ]
+    then
+        /slack-alert.sh "One or more backups on database host $TARGET_DATABASE_HOST failed. The error details are included below:" "$logcontents"
+    fi
+
     echo -e "aws-database-backup encountered 1 or more errors. Exiting with status code 1."
     exit 1
+
 else
+
+    if [ "$SLACK_ENABLED" = true ]
+    then
+        /slack-alert.sh "All database backups successfully completed on database host $TARGET_DATABASE_HOST."
+    fi
+
     exit 0
+    
 fi
