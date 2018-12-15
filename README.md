@@ -15,17 +15,21 @@ The following environment variables are required by aws-database-backup.
 
 | Environment Variable        | Purpose                                   |
 | --------------------------- |-------------------------------------------|
-| AWS_ACCESS_KEY_ID           | AWS IAM Access Key ID.                                   |
-| AWS_SECRET_ACCESS_KEY       | AWS IAM Secret Access Key. Should have very limited IAM permissions (see below for example) and should be configured using a Secret in Kubernetes.                                                            |
-| AWS_DEFAULT_REGION          | Region of the S3 Bucket (e.g. eu-west-2).                |
-| AWS_BUCKET_NAME             | The name of the S3 bucket.                               |
-| AWS_BUCKET_BACKUP_PATH      | Path the backup file should be saved to in S3. E.g. `/database/myblog/backups/`. **Requires the trailing / and should not include the file name.**                                                             |
-| AWS_BUCCKET_BACKUP_NAME     | File name of the backup file. E.g. `database_dump.sql`.  |
-| TARGET_DATABASE_HOST        | Hostname or IP address of the MySQL Host.                |
-| TARGET_DATABASE_PORT        | Port MySQL is listening on.                              |
-| TARGET_DATABASE_NAME        | Name of the database to dump.                            |
-| TARGET_DATABASE_USER        | Username to authenticate to the database with.           |
-| TARGET_DATABASE_PASSWORD    | Password to authenticate to the database with. Should be configured using a Secret in Kubernetes. |
+| AWS_ACCESS_KEY_ID           | **(Required)** AWS IAM Access Key ID.                                   |
+| AWS_SECRET_ACCESS_KEY       | **(Required)** AWS IAM Secret Access Key. Should have very limited IAM permissions (see below for example) and should be configured using a Secret in Kubernetes.                                                                |
+| AWS_DEFAULT_REGION          | **(Required)** Region of the S3 Bucket (e.g. eu-west-2).                |
+| AWS_BUCKET_NAME             | **(Required)** The name of the S3 bucket.                               |
+| AWS_BUCKET_BACKUP_PATH      | **(Required)** Path the backup file should be saved to in S3. E.g. `/database/myblog/backups/`. **Requires the trailing / and should not include the file name.**                                                               |
+| AWS_BUCCKET_BACKUP_NAME     | **(Required)** File name of the backup file. E.g. `database_dump.sql`.  |
+| TARGET_DATABASE_HOST        | **(Required)** Hostname or IP address of the MySQL Host.                |
+| TARGET_DATABASE_PORT        | **(Optional)** Port MySQL is listening on. (Default 3306)               |
+| TARGET_DATABASE_NAME        | **(Required)** Name of the database to dump.                            |
+| TARGET_DATABASE_USER        | **(Required)** Username to authenticate to the database with.           |
+| TARGET_DATABASE_PASSWORD    | **(Required)** Password to authenticate to the database with. Should be configured using a Secret in Kubernetes. |
+| SLACK_ENABLED               | **(Optional)** (true/false) Should Slack messages be sent upon the completion of each backup? (Default False)  |
+| SLACK_USERNAME              | **(Optional)** (true/false) What username should be used for the Slack WebHook? (Default aws-database-backup)  |
+| SLACK_CHANNEL               | **(Required if Slack enabled)** What Slack Channel should messages be posted to?                               |
+| SLACK_WEBHOOK_URL           | **(Required if Slack enabled)** What is the Slack WebHook URL to post too?                                     |
 
 ## Configuring the S3 Bucket & AWS IAM User
 
