@@ -6,6 +6,9 @@ This container was made to suit my own specific needs, and so is fairly limited 
 
 Over time, this will likely be updated to support more features and functionality. You can read my blog post about my Kubernetes Architecture [here](https://benjamin.maynard.io/this-blog-now-runs-on-kubernetes-heres-the-architecture/).
 
+
+[All changes are documented in the changelog](CHANGELOG.md)
+
 ## Environment Variables
 
 The following environment variables are required by aws-database-backup.
