@@ -14,6 +14,11 @@ RUN apk -v --update add \
     apk -v --purge del py-pip && \
     rm /var/cache/apk/*
 
+# Set Default Environment Variables
+ENV TARGET_DATABASE_PORT=3306
+ENV SLACK_ENABLED=false
+ENV SLACK_USERNAME=aws-database-backup
+
 # Copy Slack Alert script and make executable
 COPY resources/slack-alert.sh /
 RUN chmod +x /slack-alert.sh
