@@ -8,11 +8,20 @@ RUN apk -v --update add \
         less \
         mailcap \
         mysql-client \
+        curl \
         && \
     pip install --upgrade awscli s3cmd python-magic && \
     apk -v --purge del py-pip && \
     rm /var/cache/apk/*
 
+# Set Default Environment Variables
+ENV TARGET_DATABASE_PORT=3306
+ENV SLACK_ENABLED=false
+ENV SLACK_USERNAME=aws-database-backup
+
+# Copy Slack Alert script and make executable
+COPY resources/slack-alert.sh /
+RUN chmod +x /slack-alert.sh
 
 # Copy backup script and execute
 COPY resources/perform-backup.sh /
