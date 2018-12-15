@@ -4,6 +4,8 @@ aws-database-backup is a container image based from Alpine Linux. This container
 
 This container was made to suit my own specific needs, and so is fairly limited in terms of configuration options. As of now, it performs a full database dump using the `mysqldump` command, and uploads it to an S3 Bucket specificed via environment variables. A full list of configuration environment variables are listed below.
 
+aws-database-backup also supports alerts into Slack. When configured, aws-database-backup will send a message into Slack each time the database backup job successfully runs. If there is an error, aws-database-backup will post the error messages into Slack.
+
 Over time, this will likely be updated to support more features and functionality. You can read my blog post about my Kubernetes Architecture [here](https://benjamin.maynard.io/this-blog-now-runs-on-kubernetes-heres-the-architecture/).
 
 
@@ -11,7 +13,7 @@ Over time, this will likely be updated to support more features and functionalit
 
 ## Environment Variables
 
-The following environment variables are required by aws-database-backup.
+The following environment variables are configurable by aws-database-backup.
 
 | Environment Variable        | Purpose                                   |
 | --------------------------- |-------------------------------------------|
@@ -29,7 +31,16 @@ The following environment variables are required by aws-database-backup.
 | SLACK_ENABLED               | **(Optional)** (true/false) Should Slack messages be sent upon the completion of each backup? (Default False)  |
 | SLACK_USERNAME              | **(Optional)** (true/false) What username should be used for the Slack WebHook? (Default aws-database-backup)  |
 | SLACK_CHANNEL               | **(Required if Slack enabled)** What Slack Channel should messages be posted to?                               |
-| SLACK_WEBHOOK_URL           | **(Required if Slack enabled)** What is the Slack WebHook URL to post too?                                     |
+| SLACK_WEBHOOK_URL           | **(Required if Slack enabled)** What is the Slack WebHook URL to post to? Should be configured using a Secret in Kubernetes. |
+
+## Slack Integration
+
+aws-database-backup supports posting into Slack after each backup job completes. The message that is posted into the Slack Channel varies as detailed below:
+
+* If the backup job is **SUCCESSFUL**: A generic message will be posted into the Slack Channel containing the following text: "All database backups successfully completed on database host <Database Host>."
+* If the backup job is **UNSUCCESSFUL**: A message will be posted into the Slack Channel with a detailed error message. This message will contain the names of the databases that failed, and the associated error messages.
+
+In order to configure aws-database-backup to post messages into Slack, you need to create a [Incoming WebHook](https://api.slack.com/incoming-webhooks). Once generated, you can configure aws-database-backup using the environment variables detailed above.
 
 ## Configuring the S3 Bucket & AWS IAM User
 
