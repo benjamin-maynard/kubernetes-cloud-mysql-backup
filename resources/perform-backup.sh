@@ -2,21 +2,21 @@
 
 has_failed=false
 
-if mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $TARGET_DATABASE_NAME > /tmp/$AWS_BUCCKET_BACKUP_NAME
+if sqloutput=$(mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $TARGET_DATABASE_NAME 2>&1 > /tmp/$AWS_BUCCKET_BACKUP_NAME)
 then
     
     echo -e "Database backup successfully completed for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S')."
 
-    if aws s3 cp /tmp/$AWS_BUCCKET_BACKUP_NAME s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH$AWS_BUCCKET_BACKUP_NAME
+    if awsoutput=$(aws s3 cp /tmp/$AWS_BUCCKET_BACKUP_NAME s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH$AWS_BUCCKET_BACKUP_NAME 2>&1)
     then
         echo -e "Database backup successfully uploaded for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S')."
     else
-        echo -e "Database backup failed to upload for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S')."
+        echo -e "Database backup failed to upload for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput"
         has_failed=true
     fi
 
 else
-    echo -e "Database backup FAILED for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S')."
+    echo -e "Database backup FAILED for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput"
     has_failed=true
 fi
 
