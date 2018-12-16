@@ -26,10 +26,6 @@ else
 fi
 
 
-# Put the contents of the database backup logs into a variable
-logcontents=`cat /tmp/aws-database-backup.log`
-
-
 # Check if any of the backups have failed. If so, exit with a status of 1. Otherwise exit cleanly with a status of 0.
 if [ "$has_failed" = true ]
 then
@@ -37,6 +33,10 @@ then
     # If Slack alerts are enabled, send a notification alongside a log of what failed
     if [ "$SLACK_ENABLED" = true ]
     then
+        # Put the contents of the database backup logs into a variable
+        logcontents=`cat /tmp/aws-database-backup.log`
+
+        # Send Slack alert
         /slack-alert.sh "One or more backups on database host $TARGET_DATABASE_HOST failed. The error details are included below:" "$logcontents"
     fi
 
