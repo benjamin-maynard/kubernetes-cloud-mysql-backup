@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.0.0] - 16-12-2018
+### Fix issue with Slack Alerts
+- Implemented the ability to backup multiple databases from a single host
+- Updated the Variable Name of TARGET_DATABASE_NAME to TARGET_DATABASE_NAMES
+- Updated the format of AWS_BUCKET_BACKUP_PATH so that the trailing / is not required
+- Removed $AWS_BUCCKET_BACKUP_NAME variable (which had a typo). Database backups are now saved using their database names
+
 ## [v1.1.1] - 16-12-2018
 ### Fix issue with Slack Alerts
 - Fixed issue with failed Slack alerts when log messages contained special characters
