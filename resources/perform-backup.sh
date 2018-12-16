@@ -5,25 +5,32 @@
 has_failed=false
 
 
-# Perform the database backup. Put the output to a variable. If successful upload the backup to S3, if unsuccessful print an entry to the console and the log, and set has_failed to true.
-if sqloutput=$(mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $TARGET_DATABASE_NAME 2>&1 > /tmp/$AWS_BUCCKET_BACKUP_NAME)
-then
-    
-    echo -e "Database backup successfully completed for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S')."
+# Loop through all the defined databases, seperating by a ,
+for CURRENT_DATABASE in ${TARGET_DATABASE_NAMES//,/ }
+do
 
-    # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
-    if awsoutput=$(aws s3 cp /tmp/$AWS_BUCCKET_BACKUP_NAME s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH$AWS_BUCCKET_BACKUP_NAME 2>&1)
+    # Perform the database backup. Put the output to a variable. If successful upload the backup to S3, if unsuccessful print an entry to the console and the log, and set has_failed to true.
+    if sqloutput=$(mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $CURRENT_DATABASE 2>&1 > /tmp/$CURRENT_DATABASE.sql)
     then
-        echo -e "Database backup successfully uploaded for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S')."
+        
+        echo -e "Database backup successfully completed for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
+
+        # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
+        if awsoutput=$(aws s3 cp /tmp/$CURRENT_DATABASE.sql s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$CURRENT_DATABASE.sql 2>&1)
+        then
+            echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
+        else
+            echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/aws-database-backup.log
+            has_failed=true
+        fi
+
     else
-        echo -e "Database backup failed to upload for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/aws-database-backup.log
+        echo -e "Database backup FAILED for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput" | tee -a /tmp/aws-database-backup.log
         has_failed=true
     fi
 
-else
-    echo -e "Database backup FAILED for $TARGET_DATABASE_NAME at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput" | tee -a /tmp/aws-database-backup.log
-    has_failed=true
-fi
+done
+
 
 
 # Check if any of the backups have failed. If so, exit with a status of 1. Otherwise exit cleanly with a status of 0.
