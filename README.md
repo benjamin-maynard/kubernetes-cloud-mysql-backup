@@ -110,7 +110,7 @@ spec:
         spec:
           containers:
           - name: my-database-backup
-            image: benjaminmaynard/kubernetes-s3-mysql-backup
+            image: gcr.io/maynard-io-public/kubernetes-s3-mysql-backup
             imagePullPolicy: Always
             env:
               - name: AWS_ACCESS_KEY_ID
