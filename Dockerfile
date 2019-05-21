@@ -17,7 +17,7 @@ RUN apk -v --update add \
 # Set Default Environment Variables
 ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
-ENV SLACK_USERNAME=aws-database-backup
+ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
 
 # Copy Slack Alert script and make executable
 COPY resources/slack-alert.sh /
