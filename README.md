@@ -81,7 +81,7 @@ metadata:
 type: Opaque
 data:
   aws_secret_access_key: <AWS Secret Access Key>
---
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -89,7 +89,7 @@ metadata:
 type: Opaque
 data:
   database_password: <Your Database Password>
---
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -97,7 +97,7 @@ metadata:
 type: Opaque
 data:
   slack_webhook_url: <Your Slack WebHook URL>
---
+---
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
