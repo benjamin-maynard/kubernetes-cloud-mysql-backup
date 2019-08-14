@@ -77,25 +77,11 @@ An example of how to schedule this container in Kubernetes as a cronjob is below
 apiVersion: v1
 kind: Secret
 metadata:
-  name: AWS_SECRET_ACCESS_KEY
+  name: my-database-backup
 type: Opaque
 data:
   aws_secret_access_key: <AWS Secret Access Key>
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: TARGET_DATABASE_PASSWORD
-type: Opaque
-data:
   database_password: <Your Database Password>
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: SLACK_WEBHOOK_URL
-type: Opaque
-data:
   slack_webhook_url: <Your Slack WebHook URL>
 ---
 apiVersion: batch/v1beta1
@@ -118,7 +104,7 @@ spec:
               - name: AWS_SECRET_ACCESS_KEY
                 valueFrom:
                    secretKeyRef:
-                     name: AWS_SECRET_ACCESS_KEY
+                     name: my-database-backup
                      key: aws_secret_access_key
               - name: AWS_DEFAULT_REGION
                 value: "<Your S3 Bucket Region>"
@@ -137,7 +123,7 @@ spec:
               - name: TARGET_DATABASE_PASSWORD
                 valueFrom:
                    secretKeyRef:
-                     name: TARGET_DATABASE_PASSWORD
+                     name: my-database-backup
                      key: database_password
               - name: SLACK_ENABLED
                 value: "<true/false>"
@@ -146,7 +132,7 @@ spec:
               - name: SLACK_WEBHOOK_URL
                 valueFrom:
                    secretKeyRef:
-                     name: SLACK_WEBHOOK_URL
+                     name: my-database-backup
                      key: slack_webhook_url
           restartPolicy: Never
 ```
