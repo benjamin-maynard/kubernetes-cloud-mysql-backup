@@ -43,7 +43,9 @@ In order to configure kubernetes-s3-mysql-backup to post messages into Slack, yo
 
 ## Configuring the S3 Bucket & AWS IAM User
 
-kubernetes-s3-mysql-backup performs a backup to the same path, with the same filename each time it runs. It therefore assumes that you have Versioning enabled on your S3 Bucket. A typical setup would involve S3 Versioning, with a Lifecycle Policy.
+By default, kubernetes-s3-mysql-backup performs a backup to the same path, with the same filename each time it runs. It therefore assumes that you have Versioning enabled on your S3 Bucket. A typical setup would involve S3 Versioning, with a Lifecycle Policy.
+
+If a timestamp is required on the backup file name, the BACKUP_TIMESTAMP Environment Variable can be set.
 
 An IAM Users should be created, with API Credentials. An example Policy to attach to the IAM User (for a minimal permissions set) is as follows:
 
