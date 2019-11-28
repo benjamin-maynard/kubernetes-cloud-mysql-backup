@@ -47,7 +47,7 @@ In order to configure kubernetes-cloud-mysql-backup to post messages into Slack,
 
 ## S3 Backend Configuration
 
-The below subheadings detail how to setup the backends for an Amazon S3 Backend.
+The below subheadings detail how to configure kubernetes-cloud-mysql-backup to backup to an Amazon S3 backend.
 
 ### S3 - Configuring the S3 Bucket & AWS IAM User
 
@@ -82,7 +82,7 @@ An IAM Users should be created, with API Credentials. An example Policy to attac
 
 ### S3 - Example Kubernetes Cronjob
 
-An example of how to schedule this container in Kubernetes as a cronjob is below. This would configure a database backup to run each day at 01:00am. The AWS Secret Access Key, and Target Database Password are stored in secrets.
+An example of how to schedule this container in Kubernetes as a cronjob is below. This would configure a database backup to run each day at 01:00am. The AWS Secret Access Key, Target Database Password and Slack Webhook URL are stored in secrets.
 
 ```
 apiVersion: v1
@@ -123,6 +123,87 @@ spec:
                 value: "<Your S3 Bucket Name>"
               - name: AWS_BUCKET_BACKUP_PATH
                 value: "<Your S3 Bucket Backup Path>"
+              - name: TARGET_DATABASE_HOST
+                value: "<Your Target Database Host>"
+              - name: TARGET_DATABASE_PORT
+                value: "<Your Target Database Port>"
+              - name: TARGET_DATABASE_NAMES
+                value: "<Your Target Database Name(s)>"
+              - name: TARGET_DATABASE_USER
+                value: "<Your Target Database Username>"
+              - name: TARGET_DATABASE_PASSWORD
+                valueFrom:
+                   secretKeyRef:
+                     name: my-database-backup
+                     key: database_password
+              - name: BACKUP_TIMESTAMP
+                value: "_%Y_%m_%d"
+              - name: SLACK_ENABLED
+                value: "<true/false>"
+              - name: SLACK_CHANNEL
+                value: "#chatops"
+              - name: SLACK_WEBHOOK_URL
+                valueFrom:
+                   secretKeyRef:
+                     name: my-database-backup
+                     key: slack_webhook_url
+          restartPolicy: Never
+```
+
+## GCS Backend Configuration
+
+The below subheadings detail how to configure kubernetes-cloud-mysql-backup to backup to an Google GCS backend.
+
+### GCS - Configuring the Service Account
+
+By default, kubernetes-cloud-mysql-backup performs a backup to the same path, with the same filename each time it runs. It therefore assumes that you have Object Versioning enabled on your GCS Bucket. A typical setup would involve GCP Object Versioning, with Object Lifecycle Management configured.
+
+If a timestamp is required on the backup file name, the BACKUP_TIMESTAMP Environment Variable can be set.
+
+In order to backup to a GCS Bucket, you must create a Service Account in Google Cloud Platform that contains the neccesary permissions to write to the destination bucket (for example the `Storage Obect Creator` role).
+
+Once created, you must create a key for the Service Account in JSON format. This key should then be base64 encoded and set in the `GCP_GCLOUD_AUTH` environment variable. For example, to encode `service_account.json` you would use the command `base64 ~/service-key.json` in your terminal.
+
+
+### GCS - Example Kubernetes Cronjob
+
+An example of how to schedule this container in Kubernetes as a cronjob is below. This would configure a database backup to run each day at 01:00am. The GCP Service Account Key, Target Database Password and Slack Webhook URL are stored in secrets.
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-database-backup
+type: Opaque
+data:
+  gcp_gcloud_auth: <Base64 encoded Service Account Key>
+  database_password: <Your Database Password>
+  slack_webhook_url: <Your Slack WebHook URL>
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: my-database-backup
+spec:
+  schedule: "0 01 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: my-database-backup
+            image: gcr.io/maynard-io-public/kubernetes-cloud-mysql-backup
+            imagePullPolicy: Always
+            env:
+              - name: GCP_GCLOUD_AUTH
+                valueFrom:
+                   secretKeyRef:
+                     name: my-database-backup
+                     key: gcp_gcloud_auth
+              - name: GCP_BUCKET_NAME
+                value: "<Your GCS Bucket Name>"
+              - name: GCP_BUCKET_BACKUP_PATH
+                value: "<Your GCS Bucket Backup Path>"
               - name: TARGET_DATABASE_HOST
                 value: "<Your Target Database Host>"
               - name: TARGET_DATABASE_PORT
