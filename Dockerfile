@@ -9,6 +9,10 @@ RUN apk -v --update add \
         mailcap \
         mysql-client \
         curl \
+        py-crcmod \
+        bash \
+        libc6-compat \
+        gnupg \        
         && \
     pip3 install --upgrade awscli s3cmd python-magic && \
     apk -v --purge del py-pip && \
@@ -18,6 +22,19 @@ RUN apk -v --update add \
 ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
+ENV CLOUD_SDK_VERSION=272.0.0
+
+# Set Google Cloud SDK Path
+ENV PATH /google-cloud-sdk/bin:$PATH
+
+# Install Google Cloud SDK
+RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
+    tar xzf google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
+    rm google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
+    gcloud config set core/disable_usage_reporting true && \
+    gcloud config set component_manager/disable_update_check true && \
+    gcloud config set metrics/environment github_docker_image && \
+    gcloud --version
 
 # Copy Slack Alert script and make executable
 COPY resources/slack-alert.sh /
