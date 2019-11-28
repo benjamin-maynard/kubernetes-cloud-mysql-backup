@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.2.0] - 28-11-2019
+### Implement GCS Backend, and rename to kubernetes-cloud-mysql-backup
+- Added the ability to use Google Cloud Storage (GCS) as a backend storage provider (backwards compatible)
+- Renamed to kubernetes-cloud-mysql-backup to better reflect the function of the application
+- Improved environment variable processing (removed case sensitivity of Slack environment variable)
+- Upgraded Alpine version to 3.10 base
+- Switched to Python3
+- Documentation improvements
+
 ## [v2.1.0] - 28-08-2019
 ### Added the ability to add a timestamp to the backup file name
 - Ability to append timestamp to the database dump via the BACKUP_TIMESTAMP environment variable added. Thanks & credit: @kuzm1ch
