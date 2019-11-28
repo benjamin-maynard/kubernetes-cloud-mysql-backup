@@ -12,7 +12,8 @@ RUN apk -v --update add \
         py-crcmod \
         bash \
         libc6-compat \
-        gnupg \        
+        gnupg \
+        coreutils \        
         && \
     pip3 install --upgrade awscli s3cmd python-magic && \
     apk -v --purge del py-pip && \
@@ -23,6 +24,7 @@ ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
 ENV CLOUD_SDK_VERSION=272.0.0
+ENV BACKUP_PROVIDER=aws
 
 # Set Google Cloud SDK Path
 ENV PATH /google-cloud-sdk/bin:$PATH
