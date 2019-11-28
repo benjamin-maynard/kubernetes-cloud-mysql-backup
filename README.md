@@ -152,7 +152,7 @@ spec:
 
 ## GCS Backend Configuration
 
-The below subheadings detail how to configure kubernetes-cloud-mysql-backup to backup to an Google GCS backend.
+The below subheadings detail how to configure kubernetes-cloud-mysql-backup to backup to a Google GCS backend.
 
 ### GCS - Configuring the Service Account
 
