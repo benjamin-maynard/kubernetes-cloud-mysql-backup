@@ -55,7 +55,7 @@ By default, kubernetes-cloud-mysql-backup performs a backup to the same path, wi
 
 If a timestamp is required on the backup file name, the BACKUP_TIMESTAMP Environment Variable can be set.
 
-An IAM Users should be created, with API Credentials. An example Policy to attach to the IAM User (for a minimal permissions set) is as follows:
+An IAM User should be created, with API Credentials. An example Policy to attach to the IAM User (for a minimal permissions set) is as follows:
 
 ```
 {
