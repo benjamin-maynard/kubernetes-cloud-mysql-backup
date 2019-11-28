@@ -162,7 +162,7 @@ If a timestamp is required on the backup file name, the BACKUP_TIMESTAMP Environ
 
 In order to backup to a GCS Bucket, you must create a Service Account in Google Cloud Platform that contains the neccesary permissions to write to the destination bucket (for example the `Storage Obect Creator` role).
 
-Once created, you must create a key for the Service Account in JSON format. This key should then be base64 encoded and set in the `GCP_GCLOUD_AUTH` environment variable. For example, to encode `service_account.json` you would use the command `base64 ~/service-key.json` in your terminal.
+Once created, you must create a key for the Service Account in JSON format. This key should then be base64 encoded and set in the `GCP_GCLOUD_AUTH` environment variable. For example, to encode `service_account.json` you would use the command `base64 ~/service-key.json` in your terminal and set the output as the `GCP_GCLOUD_AUTH` environment variable.
 
 
 ### GCS - Example Kubernetes Cronjob
