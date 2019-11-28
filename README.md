@@ -15,12 +15,13 @@ The below table lists all of the Environment Variables that are configurable for
 
 | Environment Variable        | Purpose                                                                                                                                                             |
 | --------------------------- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BACKUP_PROVIDER             | **(Optional)** The backend to use for storing the MySQL backups. Supported options are `aws` (default) or `gcs`                                                     |
 | AWS_ACCESS_KEY_ID           | **(Required for AWS Backend)** AWS IAM Access Key ID.                                                                                                               |
 | AWS_SECRET_ACCESS_KEY       | **(Required for AWS Backend)** AWS IAM Secret Access Key. Should have very limited IAM permissions (see below for example) and should be configured using a Secret in Kubernetes.                                                                                                                                                                                      |
 | AWS_DEFAULT_REGION          | **(Required for AWS Backend)** Region of the S3 Bucket (e.g. eu-west-2).                                                                                            |
 | AWS_BUCKET_NAME             | **(Required for AWS Backend)** The name of the S3 bucket.                                                                                                           |
 | AWS_BUCKET_BACKUP_PATH      | **(Required for AWS Backend)** Path the backup file should be saved to in S3. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.** |
-| GCP_GCLOUD_AUTH                 | **(Required for GCP Backend)** Base64 encoded service account key exported as JSON. For example `base64 ~/service-key.json`                                         |
+| GCP_GCLOUD_AUTH                 | **(Required for GCP Backend)** Base64 encoded service account key exported as JSON. Example of how to generate: `base64 ~/service-key.json`                                         |
 | GCP_BUCKET_NAME             | **(Required for GCP Backend)** The name of GCP GCS bucket.                                                                                                          |
 | GCP_BUCKET_BACKUP_PATH      | **(Required for GCP Backend)** Path the backup file should be saved to in GCS. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.**|
 | TARGET_DATABASE_HOST        | **(Required)** Hostname or IP address of the MySQL Host.                                                                                                            |
