@@ -1,9 +1,14 @@
 #/bin/sh
 
-
 # Set the has_failed variable to false. This will change if any of the subsequent database backups/uploads fail.
 has_failed=false
 
+# Create the GCloud Authentication file if set
+if [ ! -z "$GCP_GCLOUD_AUTH" ]
+then
+    echo "$GCP_GCLOUD_AUTH" | base64 --decode > "$HOME"/gcloud.json
+    gcloud auth activate-service-account --key-file=$HOME/gcloud.json
+fi
 
 # Loop through all the defined databases, seperating by a ,
 for CURRENT_DATABASE in ${TARGET_DATABASE_NAMES//,/ }
@@ -16,14 +21,38 @@ do
 
         echo -e "Database backup successfully completed for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
 
-        # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
-        if awsoutput=$(aws s3 cp /tmp/$DUMP s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$DUMP 2>&1)
+        # Convert BACKUP_PROVIDER to lowercase before executing if statement
+        BACKUP_PROVIDER=$(echo "$BACKUP_PROVIDER" | awk '{print tolower($0)}')
+
+        # If the Backup Provider is AWS, then upload to S3
+        if [ "$BACKUP_PROVIDER" = "aws" ]
         then
-            echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
-        else
-            echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-s3-mysql-backup.log
-            has_failed=true
+
+            # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
+            if awsoutput=$(aws s3 cp /tmp/$DUMP s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$DUMP 2>&1)
+            then
+                echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
+            else
+                echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-s3-mysql-backup.log
+                has_failed=true
+            fi
+    
         fi
+
+        # If the Backup Provider is GCP, then upload to GCS
+        if [ "$BACKUP_PROVIDER" = "gcp" ]
+        then
+
+            # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
+            if gcpoutput=$(gsutil cp /tmp/$DUMP gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/$DUMP 2>&1)
+            then
+                echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
+            else
+                echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $gcpoutput" | tee -a /tmp/kubernetes-s3-mysql-backup.log
+                has_failed=true
+            fi
+    
+        fi        
 
     else
         echo -e "Database backup FAILED for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput" | tee -a /tmp/kubernetes-s3-mysql-backup.log
@@ -38,8 +67,11 @@ done
 if [ "$has_failed" = true ]
 then
 
+    # Convert SLACK_ENABLED to lowercase before executing if statement
+    SLACK_ENABLED=$(echo "$SLACK_ENABLED" | awk '{print tolower($0)}')
+
     # If Slack alerts are enabled, send a notification alongside a log of what failed
-    if [ "$SLACK_ENABLED" = true ]
+    if [ "$SLACK_ENABLED" = "true" ]
     then
         # Put the contents of the database backup logs into a variable
         logcontents=`cat /tmp/kubernetes-s3-mysql-backup.log`
@@ -54,7 +86,7 @@ then
 else
 
     # If Slack alerts are enabled, send a notification that all database backups were successful
-    if [ "$SLACK_ENABLED" = true ]
+    if [ "$SLACK_ENABLED" = "true" ]
     then
         /slack-alert.sh "All database backups successfully completed on database host $TARGET_DATABASE_HOST."
     fi
