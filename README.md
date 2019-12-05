@@ -200,8 +200,10 @@ spec:
                    secretKeyRef:
                      name: my-database-backup
                      key: gcp_gcloud_auth
+              - name: BACKUP_PROVIDER
+                value: "gcp"
               - name: GCP_BUCKET_NAME
-                value: "<Your GCS Bucket Name>"
+                value: "<Your GCS Bucket Name>"                
               - name: GCP_BUCKET_BACKUP_PATH
                 value: "<Your GCS Bucket Backup Path>"
               - name: TARGET_DATABASE_HOST
