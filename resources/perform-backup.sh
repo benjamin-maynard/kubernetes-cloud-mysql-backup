@@ -38,6 +38,7 @@ do
         if [ "$BACKUP_PROVIDER" = "aws" ]
         then
 
+            # If the AWS_S3_ENDPOINT variable isn't empty, then populate the --endpoint-url parameter to use a custom S3 compatable endpoint
             if [ ! -z "$AWS_S3_ENDPOINT" ]
             then
                 ENDPOINT="--endpoint-url=$AWS_S3_ENDPOINT"
