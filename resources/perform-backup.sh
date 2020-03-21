@@ -96,7 +96,7 @@ then
         /slack-alert.sh "One or more backups on database host $TARGET_DATABASE_HOST failed. The error details are included below:" "$logcontents"
     fi
 
-    echo -e "kubernetes-s3-mysql-backup encountered 1 or more errors. Exiting with status code 1."
+    echo -e "kubernetes-cloud-mysql-backup encountered 1 or more errors. Exiting with status code 1."
     exit 1
 
 else

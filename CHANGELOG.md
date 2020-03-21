@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the ability to use custom S3 compatible storage endpoints. Thanks & credit: @mwienk
 - Bumped Google Cloud SDK version to 285.0.1
 - Bumped Alpine Linux version to 3.11
+- Corrected log filenames that were not correctly updated as part of the v2.2.0 rename
+
 
 ## [v2.2.0] - 28-11-2019
 ### Implement GCS Backend, and rename to kubernetes-cloud-mysql-backup
