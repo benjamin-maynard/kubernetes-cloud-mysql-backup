@@ -14,6 +14,7 @@ RUN apk -v --update add \
         libc6-compat \
         gnupg \
         coreutils \        
+        gzip \
         && \
     pip3 install --upgrade awscli s3cmd python-magic && \
     apk -v --purge del py-pip && \

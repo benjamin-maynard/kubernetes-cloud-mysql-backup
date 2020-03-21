@@ -21,6 +21,16 @@ do
 
         echo -e "Database backup successfully completed for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
 
+        # Convert BACKUP_COMPRESS to lowercase before executing if statement
+        BACKUP_COMPRESS=$(echo "$BACKUP_COMPRESS" | awk '{print tolower($0)}')
+        
+        # If the Backup Compress is true, then compress the file for .gz format
+        if [ "$BACKUP_COMPRESS" = "true" ]
+        then
+            gzip -9 -c /tmp/"$DUMP" > /tmp/"$DUMP".gz
+            DUMP="$DUMP".gz
+        fi
+
         # Convert BACKUP_PROVIDER to lowercase before executing if statement
         BACKUP_PROVIDER=$(echo "$BACKUP_PROVIDER" | awk '{print tolower($0)}')
 
