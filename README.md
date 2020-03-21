@@ -21,6 +21,7 @@ The below table lists all of the Environment Variables that are configurable for
 | AWS_DEFAULT_REGION          | **(Required for AWS Backend)** Region of the S3 Bucket (e.g. eu-west-2).                                                                                            |
 | AWS_BUCKET_NAME             | **(Required for AWS Backend)** The name of the S3 bucket.                                                                                                           |
 | AWS_BUCKET_BACKUP_PATH      | **(Required for AWS Backend)** Path the backup file should be saved to in S3. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.** |
+| AWS_S3_ENDPOINT             | **(Optional)** The S3-compatible storage endpoint (for MinIO/other cloud storage) bucket.                                                                                                           |
 | GCP_GCLOUD_AUTH                 | **(Required for GCP Backend)** Base64 encoded service account key exported as JSON. Example of how to generate: `base64 ~/service-key.json`                                         |
 | GCP_BUCKET_NAME             | **(Required for GCP Backend)** The name of GCP GCS bucket.                                                                                                          |
 | GCP_BUCKET_BACKUP_PATH      | **(Required for GCP Backend)** Path the backup file should be saved to in GCS. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.**|
