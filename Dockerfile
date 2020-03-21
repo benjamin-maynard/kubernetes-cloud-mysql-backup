@@ -1,5 +1,5 @@
 # Set the base image
-FROM alpine:3.10
+FROM alpine:3.11
 
 RUN apk -v --update add \
         python3 \
@@ -24,7 +24,7 @@ RUN apk -v --update add \
 ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
-ENV CLOUD_SDK_VERSION=272.0.0
+ENV CLOUD_SDK_VERSION=285.0.1
 ENV BACKUP_PROVIDER=aws
 
 # Set Google Cloud SDK Path

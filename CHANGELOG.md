@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.3.0] - 21-03-2020
+### Implement GCS Backend, and rename to kubernetes-cloud-mysql-backup
+- Added the ability to GZIP compress backup files. Thanks & credit: @LucasBG0
+- Added the ability to use custom S3 compatible storage endpoints. Thanks & credit: @mwienk
+- Bumped Google Cloud SDK version to 285.0.1
+- Bumped Alpine Linux version to 3.11
+- Corrected log filenames that were not correctly updated as part of the v2.2.0 rename
+
+
 ## [v2.2.0] - 28-11-2019
 ### Implement GCS Backend, and rename to kubernetes-cloud-mysql-backup
 - Added the ability to use Google Cloud Storage (GCS) as a backend storage provider (backwards compatible)
