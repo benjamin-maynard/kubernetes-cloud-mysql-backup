@@ -23,12 +23,20 @@ do
 
         # Convert BACKUP_COMPRESS to lowercase before executing if statement
         BACKUP_COMPRESS=$(echo "$BACKUP_COMPRESS" | awk '{print tolower($0)}')
-        
+
         # If the Backup Compress is true, then compress the file for .gz format
         if [ "$BACKUP_COMPRESS" = "true" ]
         then
             gzip -9 -c /tmp/"$DUMP" > /tmp/"$DUMP".gz
             DUMP="$DUMP".gz
+        fi
+
+        # Optionally encrypt the backup
+        if [ -n "$AGE_PUBLIC_KEY" ];
+        then
+            cat /tmp/"$DUMP" | age -a -r "$AGE_PUBLIC_KEY" > /tmp/"$DUMP".age
+            echo -e "Encrypted backup with age"
+            DUMP="$DUMP".age
         fi
 
         # Convert BACKUP_PROVIDER to lowercase before executing if statement
@@ -53,7 +61,7 @@ do
                 echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
                 has_failed=true
             fi
-    
+
         fi
 
         # If the Backup Provider is GCP, then upload to GCS
@@ -68,8 +76,8 @@ do
                 echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $gcpoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
                 has_failed=true
             fi
-    
-        fi        
+
+        fi
 
     else
         echo -e "Database backup FAILED for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
