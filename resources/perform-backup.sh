@@ -6,8 +6,8 @@ has_failed=false
 # Create the GCloud Authentication file if set
 if [ ! -z "$GCP_GCLOUD_AUTH" ]
 then
-    echo "$GCP_GCLOUD_AUTH" | base64 --decode > "$HOME"/gcloud.json
-    gcloud auth activate-service-account --key-file=$HOME/gcloud.json
+    echo "$GCP_GCLOUD_AUTH" > "$HOME"/gcloud.json
+    gcloud auth activate-service-account --key-file="$HOME"/gcloud.json
 fi
 
 # Loop through all the defined databases, seperating by a ,
