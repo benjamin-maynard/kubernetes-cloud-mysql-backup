@@ -6,8 +6,18 @@ has_failed=false
 # Create the GCloud Authentication file if set
 if [ ! -z "$GCP_GCLOUD_AUTH" ]
 then
-    echo "$GCP_GCLOUD_AUTH" > "$HOME"/gcloud.json
-    gcloud auth activate-service-account --key-file="$HOME"/gcloud.json
+
+    # Check if we are already base64 decoded, credit: https://stackoverflow.com/questions/8571501/how-to-check-whether-a-string-is-base64-encoded-or-not
+    if echo "$GCP_GCLOUD_AUTH" | grep -Eq '^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$'
+    then
+        echo "$GCP_GCLOUD_AUTH" | base64 --decode > "$HOME"/gcloud.json
+    else
+        echo "$GCP_GCLOUD_AUTH" > "$HOME"/gcloud.json
+    fi
+    
+    # Activate the Service Account
+    gcloud auth activate-service-account --key-file=$HOME/gcloud.json
+
 fi
 
 # Loop through all the defined databases, seperating by a ,
