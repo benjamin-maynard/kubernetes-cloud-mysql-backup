@@ -4,10 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+vv2.## [v2.4.0] - 21-11-2020 - **DRAFT**
+### Implement encryption capability, bump Alpine and gcloud versions and bug fixes
+- Added the ability to optionally encrypt backups using [age](https://github.com/FiloSottile/age). Thanks & credit: [@adamdecaf](https://github.com/adamdecaf)
+- Bumped Alpine Linux version to `3.12.1` from `3.11`
+- Bumped Google Cloud SDK version to `319.0.0` from `285.0.1`
+- Added detection and conditional decoding of base64 encoded `GCP_GCLOUD_AUTH` environment variables to resolve issues with Kubernetes automatic decoding. Thanks & credit: [@sreesanpd](https://github.com/sreesanpd)
+- Improved formatting and added a license
+
 ## [v2.3.0] - 21-03-2020
 ### Implement GCS Backend, and rename to kubernetes-cloud-mysql-backup
-- Added the ability to GZIP compress backup files. Thanks & credit: @LucasBG0
-- Added the ability to use custom S3 compatible storage endpoints. Thanks & credit: @mwienk
+- Added the ability to GZIP compress backup files. Thanks & credit: [@LucasBG0](https://github.com/LucasBG0)
+- Added the ability to use custom S3 compatible storage endpoints. Thanks & credit: [@mwienk](https://github.com/mwienk)
 - Bumped Google Cloud SDK version to 285.0.1
 - Bumped Alpine Linux version to 3.11
 - Corrected log filenames that were not correctly updated as part of the v2.2.0 rename
