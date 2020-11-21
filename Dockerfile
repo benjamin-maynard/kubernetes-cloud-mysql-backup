@@ -25,10 +25,12 @@ ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
 ENV CLOUD_SDK_VERSION=285.0.1
+ENV AGE_VERSION=v1.0.0-beta5
 ENV BACKUP_PROVIDER=aws
 
+
 # Install FiloSottile/age
-RUN wget -O age.tar.gz https://github.com/FiloSottile/age/releases/download/v1.0.0-beta2/age-v1.0.0-beta2-linux-amd64.tar.gz && \
+RUN wget -O age.tar.gz https://github.com/FiloSottile/age/releases/download/$AGE_VERSION/age-$AGE_VERSION-linux-amd64.tar.gz && \
     tar xf age.tar.gz && \
     cp ./age/age /usr/local/bin/age
 
