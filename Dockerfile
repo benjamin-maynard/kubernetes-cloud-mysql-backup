@@ -1,5 +1,5 @@
 # Set the base image
-FROM alpine:3.11
+FROM alpine:3.12.1
 
 RUN apk -v --update add \
         python3 \
@@ -26,11 +26,10 @@ RUN apk -v --update add \
 ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
-ENV CLOUD_SDK_VERSION=285.0.1
+ENV CLOUD_SDK_VERSION=319.0.0
 # Release commit for https://github.com/FiloSottile/age/releases/tag/v1.0.0-beta5 / https://github.com/FiloSottile/age/commit/31500bfa2f6a36d2958483fc54d6e3cc74154cbc
 ENV AGE_VERSION=31500bfa2f6a36d2958483fc54d6e3cc74154cbc
 ENV BACKUP_PROVIDER=aws
-
 
 # Install FiloSottile/age
 RUN git clone https://filippo.io/age && \
