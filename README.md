@@ -13,30 +13,30 @@ All changes are captured in the [changelog](CHANGELOG.md), which adheres to [Sem
 
 The below table lists all of the Environment Variables that are configurable for kubernetes-cloud-mysql-backup.
 
-| Environment Variable        | Purpose                                                                                                                                                             |
-| --------------------------- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BACKUP_PROVIDER             | **(Optional)** The backend to use for storing the MySQL backups. Supported options are `aws` (default) or `gcp`                                                     |
-| AWS_ACCESS_KEY_ID           | **(Required for AWS Backend)** AWS IAM Access Key ID.                                                                                                               |
-| AWS_SECRET_ACCESS_KEY       | **(Required for AWS Backend)** AWS IAM Secret Access Key. Should have very limited IAM permissions (see below for example) and should be configured using a Secret in Kubernetes.                                                                                                                                                                                      |
-| AWS_DEFAULT_REGION          | **(Required for AWS Backend)** Region of the S3 Bucket (e.g. eu-west-2).                                                                                            |
-| AWS_BUCKET_NAME             | **(Required for AWS Backend)** The name of the S3 bucket.                                                                                                           |
-| AWS_BUCKET_BACKUP_PATH      | **(Required for AWS Backend)** Path the backup file should be saved to in S3. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.** |
-| AWS_S3_ENDPOINT             | **(Optional)** The S3-compatible storage endpoint (for MinIO/other cloud storage) bucket.                                                                                                           |
-| GCP_GCLOUD_AUTH                 | **(Required for GCP Backend)** Base64 encoded service account key exported as JSON. Example of how to generate: `base64 ~/service-key.json`                                         |
-| GCP_BUCKET_NAME             | **(Required for GCP Backend)** The name of GCP GCS bucket.                                                                                                          |
-| GCP_BUCKET_BACKUP_PATH      | **(Required for GCP Backend)** Path the backup file should be saved to in GCS. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.**|
-| TARGET_DATABASE_HOST        | **(Required)** Hostname or IP address of the MySQL Host.                                                                                                            |
-| TARGET_DATABASE_PORT        | **(Optional)** Port MySQL is listening on (Default: 3306).                                                                                                          |
-| TARGET_DATABASE_NAMES       | **(Required)** Name of the databases to dump. This should be comma seperated (e.g. `database1,database2`).                                                          |
-| TARGET_DATABASE_USER        | **(Required)** Username to authenticate to the database with.                                                                                                       |
-| TARGET_DATABASE_PASSWORD    | **(Required)** Password to authenticate to the database with. Should be configured using a Secret in Kubernetes.                                                    |
-| BACKUP_TIMESTAMP            | **(Optional)** Date string to append to the backup filename ([date](http://man7.org/linux/man-pages/man1/date.1.html) format). Leave unset if using S3 Versioning and date stamp is not required.                                                                                                                                                                     |
-| BACKUP_COMPRESS             | **(Optional)** (true/false) Enable or disable the backup compression gzip - (Default False).                                                                        |
-| AGE_PUBLIC_KEY              | **(Optional)** Public key used to encrypt backup with [FiloSottile/age](https://github.com/FiloSottile/age). Leave blank to disable backup encryption.                                                       |
-| SLACK_ENABLED               | **(Optional)** (true/false) Enable or disable the Slack Integration (Default False).                                                                                |
-| SLACK_USERNAME              | **(Optional)** (true/false) Username to use for the Slack Integration (Default: kubernetes-cloud-mysql-backup).                                                        |
-| SLACK_CHANNEL               | **(Required if Slack enabled)** Slack Channel the WebHook is configured for.                                                                                        |
-| SLACK_WEBHOOK_URL           | **(Required if Slack enabled)** What is the Slack WebHook URL to post to? Should be configured using a Secret in Kubernetes.                                        |
+| Environment Variable     | Purpose                                                                                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BACKUP_PROVIDER          | **(Optional)** The backend to use for storing the MySQL backups. Supported options are `aws` (default) or `gcp`                                                                                   |
+| AWS_ACCESS_KEY_ID        | **(Required for AWS Backend)** AWS IAM Access Key ID.                                                                                                                                             |
+| AWS_SECRET_ACCESS_KEY    | **(Required for AWS Backend)** AWS IAM Secret Access Key. Should have very limited IAM permissions (see below for example) and should be configured using a Secret in Kubernetes.                 |
+| AWS_DEFAULT_REGION       | **(Required for AWS Backend)** Region of the S3 Bucket (e.g. eu-west-2).                                                                                                                          |
+| AWS_BUCKET_NAME          | **(Required for AWS Backend)** The name of the S3 bucket.                                                                                                                                         |
+| AWS_BUCKET_BACKUP_PATH   | **(Required for AWS Backend)** Path the backup file should be saved to in S3. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.**                               |
+| AWS_S3_ENDPOINT          | **(Optional)** The S3-compatible storage endpoint (for MinIO/other cloud storage) bucket.                                                                                                         |
+| GCP_GCLOUD_AUTH          | **(Required for GCP Backend)** Base64 encoded service account key exported as JSON. Example of how to generate: `base64 ~/service-key.json`                                                       |
+| GCP_BUCKET_NAME          | **(Required for GCP Backend)** The name of GCP GCS bucket.                                                                                                                                        |
+| GCP_BUCKET_BACKUP_PATH   | **(Required for GCP Backend)** Path the backup file should be saved to in GCS. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.**                              |
+| TARGET_DATABASE_HOST     | **(Required)** Hostname or IP address of the MySQL Host.                                                                                                                                          |
+| TARGET_DATABASE_PORT     | **(Optional)** Port MySQL is listening on (Default: 3306).                                                                                                                                        |
+| TARGET_DATABASE_NAMES    | **(Required)** Name of the databases to dump. This should be comma seperated (e.g. `database1,database2`).                                                                                        |
+| TARGET_DATABASE_USER     | **(Required)** Username to authenticate to the database with.                                                                                                                                     |
+| TARGET_DATABASE_PASSWORD | **(Required)** Password to authenticate to the database with. Should be configured using a Secret in Kubernetes.                                                                                  |
+| BACKUP_TIMESTAMP         | **(Optional)** Date string to append to the backup filename ([date](http://man7.org/linux/man-pages/man1/date.1.html) format). Leave unset if using S3 Versioning and date stamp is not required. |
+| BACKUP_COMPRESS          | **(Optional)** (true/false) Enable or disable the backup compression gzip - (Default False).                                                                                                      |
+| AGE_PUBLIC_KEY           | **(Optional)** Public key used to encrypt backup with [FiloSottile/age](https://github.com/FiloSottile/age). Leave blank to disable backup encryption.                                            |
+| SLACK_ENABLED            | **(Optional)** (true/false) Enable or disable the Slack Integration (Default False).                                                                                                              |
+| SLACK_USERNAME           | **(Optional)** (true/false) Username to use for the Slack Integration (Default: kubernetes-cloud-mysql-backup).                                                                                   |
+| SLACK_CHANNEL            | **(Required if Slack enabled)** Slack Channel the WebHook is configured for.                                                                                                                      |
+| SLACK_WEBHOOK_URL        | **(Required if Slack enabled)** What is the Slack WebHook URL to post to? Should be configured using a Secret in Kubernetes.                                                                      |
 
 
 ## Slack Integration
