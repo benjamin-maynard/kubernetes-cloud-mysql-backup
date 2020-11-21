@@ -1,23 +1,23 @@
 # Set the base image
 FROM alpine:3.12.1
 
+# Install required packages
 RUN apk -v --update add \
-        python3 \
-        py-pip \
-        groff \
-        less \
-        mailcap \
-        mysql-client \
-        curl \
-        py-crcmod \
-        bash \
-        libc6-compat \
-        gnupg \
-        coreutils \        
-        gzip \
-        go \
-        git \
-        && \
+    python3 \
+    py-pip \
+    groff \
+    less \
+    mailcap \
+    mysql-client \
+    curl \
+    py-crcmod \
+    bash \
+    libc6-compat \
+    gnupg \
+    coreutils \        
+    gzip \
+    go \
+    git && \
     pip3 install --upgrade awscli s3cmd python-magic && \
     apk -v --purge del py-pip && \
     rm /var/cache/apk/*
@@ -31,7 +31,7 @@ ENV CLOUD_SDK_VERSION=319.0.0
 ENV AGE_VERSION=31500bfa2f6a36d2958483fc54d6e3cc74154cbc
 ENV BACKUP_PROVIDER=aws
 
-# Install FiloSottile/age
+# Install FiloSottile/age (https://github.com/FiloSottile/age)
 RUN git clone https://filippo.io/age && \
     cd age && \
     git checkout $AGE_VERSION && \
