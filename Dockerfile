@@ -15,6 +15,8 @@ RUN apk -v --update add \
         gnupg \
         coreutils \        
         gzip \
+        go \
+        git \
         && \
     pip3 install --upgrade awscli s3cmd python-magic && \
     apk -v --purge del py-pip && \
@@ -25,7 +27,15 @@ ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
 ENV CLOUD_SDK_VERSION=319.0.0
+# Release commit for https://github.com/FiloSottile/age/releases/tag/v1.0.0-beta5 / https://github.com/FiloSottile/age/commit/31500bfa2f6a36d2958483fc54d6e3cc74154cbc
+ENV AGE_VERSION=31500bfa2f6a36d2958483fc54d6e3cc74154cbc
 ENV BACKUP_PROVIDER=aws
+
+# Install FiloSottile/age
+RUN git clone https://filippo.io/age && \
+    cd age && \
+    git checkout $AGE_VERSION && \
+    go build -o . filippo.io/age/cmd/... && cp age /usr/local/bin/
 
 # Set Google Cloud SDK Path
 ENV PATH /google-cloud-sdk/bin:$PATH
