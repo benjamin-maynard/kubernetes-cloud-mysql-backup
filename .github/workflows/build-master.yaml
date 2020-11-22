@@ -29,4 +29,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: benjamin-maynard/kubernetes-cloud-mysql-backup:latest,benjamin-maynard/kubernetes-cloud-mysql-backup:${{ github.sha }}
+          tags: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:latest,ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:${{ github.sha }}
