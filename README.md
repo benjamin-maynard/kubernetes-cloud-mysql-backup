@@ -4,7 +4,7 @@ kubernetes-cloud-mysql-backup is a container image based on Alpine Linux. This c
 
 Currently, kubernetes-cloud-mysql-backup supports the backing up of MySQL Databases. It can perform backups of multiple MySQL databases from a single database host. When triggered, a full database dump is performed using the `mysqldump` command for each configured database. The backup(s) are then uploaded to an Amazon S3 Bucket or a Google Cloud Storage Bucket. kubernetes-cloud-mysql-backup features Slack Integration, and can post messages into a channel detailing if the backup(s) were successful or not.
 
-Over time, kubernetes-cloud-mysql-backup will be updated to support more features and functionality. I currently use this container as part of my Kubernetes Architecture which you can read about [here](https://benjamin.maynard.io/this-blog-now-runs-on-kubernetes-heres-the-architecture/).
+Over time, kubernetes-cloud-mysql-backup will be updated to support more features and functionality.
 
 All changes are captured in the [changelog](CHANGELOG.md), which adheres to [Semantic Versioning](https://semver.org/spec/vadheres2.0.0.html).
 
