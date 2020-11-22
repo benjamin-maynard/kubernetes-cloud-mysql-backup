@@ -110,7 +110,7 @@ spec:
         spec:
           containers:
           - name: my-database-backup
-            image: gcr.io/maynard-io-public/kubernetes-cloud-mysql-backup
+            image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.4.0
             imagePullPolicy: Always
             env:
               - name: AWS_ACCESS_KEY_ID
@@ -195,7 +195,7 @@ spec:
         spec:
           containers:
           - name: my-database-backup
-            image: gcr.io/maynard-io-public/kubernetes-cloud-mysql-backup
+            image: ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:v2.4.0
             imagePullPolicy: Always
             env:
               - name: GCP_GCLOUD_AUTH
