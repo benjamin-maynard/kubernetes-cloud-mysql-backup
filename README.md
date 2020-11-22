@@ -159,7 +159,7 @@ The below subheadings detail how to configure kubernetes-cloud-mysql-backup to b
 
 ### GCS - Configuring the Service Account
 
-By default, kubernetes-cloud-mysql-backup performs a backup to the same path, with the same filename each time it runs. It therefore assumes that you have Object Versioning enabled on your GCS Bucket. A typical setup would involve GCP Object Versioning, with Object Lifecycle Management configured.
+By default, kubernetes-cloud-mysql-backup performs a backup to the same path, with the same filename each time it runs. It therefore assumes that you have Object Versioning enabled on your GCS Bucket. A typical setup would involve GCS Object Versioning, with Object Lifecycle Management configured.
 
 If a timestamp is required on the backup file name, the BACKUP_TIMESTAMP Environment Variable can be set.
 
