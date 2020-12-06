@@ -1,12 +1,34 @@
 name: Runs tests on a PR
 on: 
-  push:
-    branches:
-      - tests
+  pull_request:
+    types: [opened]
+  issue_comment:
+    types: [created]
 jobs:
   test-pr:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     steps:
+      - 
+        name: Check user permission
+        id: perms-check
+        uses: benjamin-maynard/action-has-permission@master
+        with:
+          required-permission: write
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check comment text
+        uses: benjamin-maynard/pull-request-comment-trigger@master
+        id: comment-check
+        with:
+          trigger: '[Automation: Run PR Tests]'
+          reaction: rocket
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      -
+        name: Determine if there is authority to continue
+        if: "! steps.perms-check.outputs.has-permission || ! steps.comment-check.outputs.triggered"
+        run: |
+          exit 1
       -
         name: Checkout
         uses: actions/checkout@v2
