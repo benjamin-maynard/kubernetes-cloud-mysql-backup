@@ -31,3 +31,9 @@ jobs:
           # Import Test DB
           echo "Importing test DB..."
           docker exec -i db-server mysql -u root -pletmein < tests/db/world.sql
+      -
+        name: Test GCP backup
+        run: |
+          # Perform database backup
+          echo "Performing database backup..."
+          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" --env-file tests/configs/gcp.env kubernetes-cloud-mysql-backup:test
