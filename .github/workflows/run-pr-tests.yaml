@@ -8,17 +8,9 @@ jobs:
   test-pr:
     runs-on: ubuntu-18.04
     steps:
-      - 
-        name: Check user permission
-        id: perms-check
-        uses: benjamin-maynard/action-has-permission@master
-        with:
-          required-permission: write
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check comment text
+      - name: Check comment
         uses: benjamin-maynard/pull-request-comment-trigger@master
-        id: comment-check
+        id: comment
         with:
           trigger: '[Automation: Run PR Tests]'
           reaction: rocket
@@ -26,7 +18,7 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
       -
         name: Determine if there is authority to continue
-        if: "! steps.perms-check.outputs.has-permission || steps.check.outputs.triggered == 'false'"
+        if: steps.comment.outputs.triggered == 'false' || steps.comment.outputs.comment_username != 'benjamin-maynard'
         run: |
           exit 1
       -
