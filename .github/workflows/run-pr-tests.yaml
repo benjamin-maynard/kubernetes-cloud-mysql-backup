@@ -94,7 +94,7 @@ jobs:
         run: |
           # Perform database backup
           echo "Performing database backup..."
-          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" --env-file tests/configs/gcp.env -e AGE_PUBLIC_KEY=$(cat tests/keys/pub) --network backup-net kubernetes-cloud-mysql-backup:test
+          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" --env-file tests/configs/gcp.env -e AGE_PUBLIC_KEY="$(cat tests/keys/pub)"" --network backup-net kubernetes-cloud-mysql-backup:test
           # Fetch backup file from GCS
           echo "Fetching database backup..."
           gsutil cp gs://kubernetes-cloud-mysql-backup-github-testing/${{ github.sha }}/world.sql.gz /tmp/world.sql.age
