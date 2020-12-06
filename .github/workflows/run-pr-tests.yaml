@@ -1,11 +1,11 @@
-name: Run tests on PR creation
+name: Runs tests on a PR
 on: 
   push:
     branches:
       - tests
 jobs:
   test-pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       -
         name: Checkout
