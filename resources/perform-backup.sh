@@ -18,12 +18,19 @@ if [ ! -z "$GCP_GCLOUD_AUTH" ]; then
 
 fi
 
+# Set the BACKUP_CREATE_DATABASE_STATEMENT variable
+if [ "$BACKUP_CREATE_DATABASE_STATEMENT" = "true" ]; then
+    BACKUP_CREATE_DATABASE_STATEMENT="--databases"
+else
+    BACKUP_CREATE_DATABASE_STATEMENT=""
+fi
+
 # Loop through all the defined databases, seperating by a ,
 for CURRENT_DATABASE in ${TARGET_DATABASE_NAMES//,/ }; do
 
     DUMP=$CURRENT_DATABASE$(date +$BACKUP_TIMESTAMP).sql
     # Perform the database backup. Put the output to a variable. If successful upload the backup to S3, if unsuccessful print an entry to the console and the log, and set has_failed to true.
-    if sqloutput=$(mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $CURRENT_DATABASE 2>&1 >/tmp/$DUMP); then
+    if sqloutput=$(mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $BACKUP_CREATE_DATABASE_STATEMENT $CURRENT_DATABASE 2>&1 >/tmp/$DUMP); then
 
         echo -e "Database backup successfully completed for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
 

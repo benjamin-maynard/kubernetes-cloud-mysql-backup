@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v2.4.1] - 06-12-2020 - **DRAFT**
 ### Add missing Python six package
 - Adds the missing Python [six](https://pypi.org/project/six/) package which was breaking awscli and removed the `py-pip` deletion step as this removes `six`
+- Add the `BACKUP_CREATE_DATABASE_STATEMENT` configuration option. This explicitly sets the `--databases` flag in `mysqldump` which causes `mysqldump` to add `CREATE DATABASE /*!32312 IF NOT EXISTS*/` and `USE` statements into the dump.
 
 ## [v2.4.0] - 21-11-2020
 ### Implement encryption capability, bump Alpine and gcloud versions and bug fixes

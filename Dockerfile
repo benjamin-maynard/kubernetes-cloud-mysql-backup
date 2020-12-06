@@ -22,6 +22,7 @@ RUN apk -v --update add \
     rm /var/cache/apk/*
 
 # Set Default Environment Variables
+ENV BACKUP_CREATE_DATABASE_STATEMENT=false
 ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
