@@ -87,9 +87,8 @@ jobs:
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
           # Remove /tmp/world.sql and .gz
-          echo "Removing /tmp/world.sql and /tmp/world.sql.gz"
+          echo "Removing /tmp/world.sql"
           rm /tmp/world.sql
-          rm /tmp/world.sql.gz
       -
         name: Test GCP Encrypted Backup
         run: |
