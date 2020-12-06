@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
       -
         name: Determine if there is authority to continue
-        if: "! steps.perms-check.outputs.has-permission || ! steps.comment-check.outputs.triggered"
+        if: "! steps.perms-check.outputs.has-permission || steps.check.outputs.triggered == 'false'"
         run: |
           exit 1
       -
