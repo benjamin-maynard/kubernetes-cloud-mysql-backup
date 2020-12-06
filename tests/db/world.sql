@@ -16,6 +16,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `world`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `world` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+
+USE `world`;
+
+--
 -- Table structure for table `city`
 --
 
@@ -118,4 +126,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-06 12:53:52
+-- Dump completed on 2020-12-06 14:31:22
