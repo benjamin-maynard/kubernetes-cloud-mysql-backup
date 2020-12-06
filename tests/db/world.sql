@@ -1,6 +1,6 @@
 -- MariaDB dump 10.17  Distrib 10.4.15-MariaDB, for Linux (x86_64)
 --
--- Host: mysql-server    Database: world
+-- Host: db-server    Database: world
 -- ------------------------------------------------------
 -- Server version	5.7.32
 
@@ -126,4 +126,3 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-06 14:31:22
