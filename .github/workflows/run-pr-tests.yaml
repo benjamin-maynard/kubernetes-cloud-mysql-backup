@@ -27,7 +27,7 @@ jobs:
           docker run --name db-server -p 3306:3306 -e MYSQL_ROOT_PASSWORD=letmein -d mysql:5.7.32
           # Wait for MySQL to Start
           echo "Waiting for MySQL Container to start..."
-          sleep 30
+          sleep 90
           docker ps
           docker logs db-server
           # Import Test DB
