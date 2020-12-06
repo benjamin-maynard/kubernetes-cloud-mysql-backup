@@ -8,8 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
         name: Setup Docker
-        id: setup_docker
         run: |
           # Build Container Locally for testing
           echo "Building kubernetes-cloud-mysql-backup..."
