@@ -77,9 +77,9 @@ jobs:
           # Fetch backup file from GCS
           echo "Fetching database backup..."
           gsutil cp gs://kubernetes-cloud-mysql-backup-github-testing/${{ github.sha }}/world.sql.gz /tmp/world.sql.gz
-          # Un-gzip backup
+          # gunzip backup
           echo "Extracting backup"
-          tar xvf /tmp/world.sql.gz
+          gunzip /tmp/world.sql.gz
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
