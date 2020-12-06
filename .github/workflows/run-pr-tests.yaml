@@ -8,6 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Install Dependencies
-        id: install_dependencies
-        run: docker
+        name: Setup Docker
+        id: setup_docker
+        run: |
+          # Build Container Locally for testing
+          echo "Building kubernetes-cloud-mysql-backup..."
+          docker build -t kubernetes-cloud-mysql-backup:test . 
+          # Pull MySQL
+          echo "Pulling mysql:5.7.32..."
+          docker pull mysql:5.7.32
