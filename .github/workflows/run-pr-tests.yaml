@@ -25,6 +25,9 @@ jobs:
           # Start MySQL Database
           echo "Starting MySQL Container..."
           docker run --name db-server -d -p 3306:3306 -e "MYSQL_ROOT_PASSWORD=letmein" mysql:5.7.32
+          # Wait for MySQL to Start
+          echo "Waiting for MySQL Container to start..."
+          sleep 10
           # Import Test DB
           echo "Importing test DB..."
           docker exec -i db-server mysql -u root -pletmein < tests/db/world.sql
