@@ -19,12 +19,15 @@ jobs:
           # Pull MySQL
           echo "Pulling mysql:5.7.32..."
           docker pull mysql:5.7.32
+          # Create Docker Network
+          echo "Creating Docker network..."
+          docker network create --driver bridge backup-net
       -
         name: Setup Test Database
         run: |
           # Start MySQL Database
           echo "Starting MySQL Container..."
-          docker run --name db-server -p 3306:3306 -e MYSQL_ROOT_PASSWORD=letmein -d mysql:5.7.32
+          docker run --name db-server -p 3306 --network backup-net -e MYSQL_ROOT_PASSWORD=letmein -d mysql:5.7.32
           # Wait for MySQL to Start. The MySQL container takes a long time to start
           echo "Waiting for MySQL Container to start..."
           sleep 90
@@ -36,4 +39,4 @@ jobs:
         run: |
           # Perform database backup
           echo "Performing database backup..."
-          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" --env-file tests/configs/gcp.env kubernetes-cloud-mysql-backup:test
+          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" --env-file tests/configs/gcp.env --network backup-net kubernetes-cloud-mysql-backup:test
