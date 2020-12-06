@@ -1,8 +1,7 @@
-name: Build on creation of a new tag
+name: Build on creation of a new release
 on:
-  create:
-    tags:
-      - v*
+  release:
+    types: [published]
 jobs:
   build-release:
     runs-on: ubuntu-latest
