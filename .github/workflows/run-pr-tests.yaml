@@ -18,7 +18,16 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA }}
           export_default_credentials: true
       -
-        name: Setup Docker
+        name: Install Age Encryption
+        working-directory: /tmp
+        run: |
+          git clone https://filippo.io/age
+          cd age
+          git checkout 31500bfa2f6a36d2958483fc54d6e3cc74154cbc
+          go build -o . filippo.io/age/cmd/...
+          p age /usr/local/bin/   
+      -
+        name: Build kubernetes-cloud-mysql-backup, pull mysql and setup Docker
         run: |
           # Build Container Locally for testing
           echo "Building kubernetes-cloud-mysql-backup..."
@@ -42,7 +51,7 @@ jobs:
           echo "Importing test DB..."
           docker exec -i db-server mysql -u root -pletmein < tests/db/world.sql
       -
-        name: Test GCP backup
+        name: Test GCP Standard Backup
         run: |
           # Perform database backup
           echo "Performing database backup..."
@@ -56,3 +65,50 @@ jobs:
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
+          # Remove /tmp/world.sql
+          echo "Removing /tmp/world.sql"
+          rm /tmp/world.sql
+      -
+        name: Test GCP Compressed Backup
+        run: |
+          # Perform database backup
+          echo "Performing database backup..."
+          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" --env-file tests/configs/gcp.env -e BACKUP_COMPRESS=true --network backup-net kubernetes-cloud-mysql-backup:test
+          # Fetch backup file from GCS
+          echo "Fetching database backup..."
+          gsutil cp gs://kubernetes-cloud-mysql-backup-github-testing/${{ github.sha }}/world.sql.gz /tmp/world.sql.gz
+          # Un-gzip backup
+          echo "Extracting backup"
+          tar xvf /tmp/world.sql.gz
+          # Strip the "Dump Completed on" line
+          echo "Stripping Dump Completed On line from downloaded backup..."
+          sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
+          echo "Comparing database backup to known good database..."
+          diff tests/db/world.sql /tmp/world.sql
+          # Remove /tmp/world.sql and .gz
+          echo "Removing /tmp/world.sql and /tmp/world.sql.gz"
+          rm /tmp/world.sql
+          rm /tmp/world.sql.gz
+      -
+        name: Test GCP Encrypted Backup
+        run: |
+          # Perform database backup
+          echo "Performing database backup..."
+          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" --env-file tests/configs/gcp.env -e AGE_PUBLIC_KEY=$(cat tests/keys/pub) --network backup-net kubernetes-cloud-mysql-backup:test
+          # Fetch backup file from GCS
+          echo "Fetching database backup..."
+          gsutil cp gs://kubernetes-cloud-mysql-backup-github-testing/${{ github.sha }}/world.sql.gz /tmp/world.sql.age
+          # Decrypt backup
+          echo "Decrypt backup"
+          age --decrypt -i tests/keys/priv /tmp/world.sql
+          # Strip the "Dump Completed on" line
+          echo "Stripping Dump Completed On line from downloaded backup..."
+          sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
+          echo "Comparing database backup to known good database..."
+          diff tests/db/world.sql /tmp/world.sql
+          # Remove /tmp/world.sql and .age
+          echo "Removing /tmp/world.sql and /tmp/world.sql.age"
+          rm /tmp/world.sql
+          rm /tmp/world.sql.age
