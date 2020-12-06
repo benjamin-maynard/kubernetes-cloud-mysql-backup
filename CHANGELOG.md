@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.4.1] - 06-12-2020 - **DRAFT**
+### Add missing Python six package
+- Adds the missing Python [six](https://pypi.org/project/six/) package which was breaking awscli and removed the `py-pip` deletion step as this removes `six`
+
 ## [v2.4.0] - 21-11-2020
 ### Implement encryption capability, bump Alpine and gcloud versions and bug fixes
 - Added the ability to optionally encrypt backups using [age](https://github.com/FiloSottile/age). Thanks & credit: [@adamdecaf](https://github.com/adamdecaf)
