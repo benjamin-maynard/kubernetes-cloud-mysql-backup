@@ -25,7 +25,7 @@ jobs:
           cd age
           git checkout 31500bfa2f6a36d2958483fc54d6e3cc74154cbc
           go build -o . filippo.io/age/cmd/...
-          p age /usr/local/bin/   
+          cp age /usr/local/bin/   
       -
         name: Build kubernetes-cloud-mysql-backup, pull mysql and setup Docker
         run: |
