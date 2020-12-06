@@ -29,6 +29,7 @@ jobs:
           echo "Waiting for MySQL Container to start..."
           sleep 10
           docker ps
+          docker logs db-server
           # Import Test DB
           echo "Importing test DB..."
           docker exec -i db-server mysql -u root -pletmein < tests/db/world.sql
