@@ -1,0 +1,13 @@
+name: Run tests on PR creation
+on: 
+  push:
+    branches:
+      - tests
+jobs:
+  test-pr:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Install Dependencies
+        id: install_dependencies
+        run: docker
