@@ -20,6 +20,8 @@ jobs:
         name: Determine if there is authority to continue
         if: steps.comment.outputs.triggered == 'false' || steps.comment.outputs.comment_username != 'benjamin-maynard'
         run: |
+          echo "Comment Creator: ${{ steps.comment.outputs.triggered }}"
+          echo "Comment Text: ${{ steps.comment.outputs.triggered }}"
           exit 1
       -
         name: Checkout
