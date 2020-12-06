@@ -25,11 +25,9 @@ jobs:
           # Start MySQL Database
           echo "Starting MySQL Container..."
           docker run --name db-server -p 3306:3306 -e MYSQL_ROOT_PASSWORD=letmein -d mysql:5.7.32
-          # Wait for MySQL to Start
+          # Wait for MySQL to Start. The MySQL container takes a long time to start
           echo "Waiting for MySQL Container to start..."
           sleep 90
-          docker ps
-          docker logs db-server
           # Import Test DB
           echo "Importing test DB..."
           docker exec -i db-server mysql -u root -pletmein < tests/db/world.sql
