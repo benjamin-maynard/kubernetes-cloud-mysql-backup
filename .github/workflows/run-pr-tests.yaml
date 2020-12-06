@@ -13,7 +13,7 @@ jobs:
           exit 1
       -
         name: Determine if there is authority to continue
-        if: ${{ github.event.issue.user.login != "benjamin-maynard" || github.event.comment.body  != "[Run PR Tests]" }}
+        if: ${{ github.event.issue.user.login != 'benjamin-maynard' || github.event.comment.body  != '[Run PR Tests]' }}
         run: |
           echo "Comment Creator: ${{ github.event.issue.user.login }}"
           echo "Comment Body: ${{ github.event.comment.body }}"
