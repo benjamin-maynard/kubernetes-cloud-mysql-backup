@@ -19,3 +19,12 @@ jobs:
           # Pull MySQL
           echo "Pulling mysql:5.7.32..."
           docker pull mysql:5.7.32
+      -
+        name: Setup Test Database
+        run: |
+          # Start MySQL Database
+          echo "Starting MySQL Container..."
+          docker run --name db-server -d -p 3306:3306 -e "MYSQL_ROOT_PASSWORD=letmein" mysql:5.7.32
+          # Import Test DB
+          echo "Importing test DB..."
+          docker exec -i db-server -u root -pletmein mysql < tests/db/world.MySQL
