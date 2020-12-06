@@ -30,4 +30,4 @@ jobs:
           sleep 10
           # Import Test DB
           echo "Importing test DB..."
-          docker exec -i db-server mysql -u root -pletmein < tests/db/world.sql
+          docker exec -i db-server mysql -u root -pletmein --protocol tcp < tests/db/world.sql
