@@ -1,27 +1,22 @@
 name: Runs tests on a PR
 on: 
-  pull_request:
-    types: [opened]
   issue_comment:
     types: [created]
 jobs:
   test-pr:
     runs-on: ubuntu-18.04
     steps:
-      - name: Check comment
-        uses: benjamin-maynard/pull-request-comment-trigger@master
-        id: comment
-        with:
-          trigger: '[Automation: Run PR Tests]'
-          reaction: rocket
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      -
+        name: Exit if not a PR comment
+        if: ${{ !github.event.issue.pull_request }}
+        run: |
+          exit 1
       -
         name: Determine if there is authority to continue
-        if: steps.comment.outputs.triggered == 'false' || steps.comment.outputs.comment_username != 'benjamin-maynard'
+        if: ${{ github.event.issue.user.login != "benjamin-maynard" || github.event.comment.body  != "[Run PR Tests]" }}
         run: |
-          echo "Comment Creator: ${{ steps.comment.outputs.triggered }}"
-          echo "Comment Username: ${{ steps.comment.outputs.comment_username }}"
+          echo "Comment Creator: ${{ github.event.issue.user.login }}"
+          echo "Comment Body: ${{ github.event.comment.body }}"
           exit 1
       -
         name: Checkout
