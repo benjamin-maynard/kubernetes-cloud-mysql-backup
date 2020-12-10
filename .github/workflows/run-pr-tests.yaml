@@ -426,3 +426,18 @@ jobs:
           echo "Removing /tmp/world.sql and /tmp/world.sql.age"
           rm /tmp/world.sql
           rm /tmp/world.sql.age
+      -
+        name: Comment on PR with Successful
+        uses: benjamin-maynard/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: .github/workflows/SUCCESS.md
+      -
+        name: Comment on PR with Failure
+        uses: benjamin-maynard/comment-on-pr@master
+        if: ${{ failure() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: .github/workflows/FAILURE.md
