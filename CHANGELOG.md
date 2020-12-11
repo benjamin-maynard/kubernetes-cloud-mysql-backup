@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v2.4.1] - 06-12-2020 - **DRAFT**
-### Add missing Python six package
+## [v2.5.0] - 06-12-2020
+### Add missing Python six package and `BACKUP_CREATE_DATABASE_STATEMENT` configuration option
 - Adds the missing Python [six](https://pypi.org/project/six/) package which was breaking awscli and removed the `py-pip` deletion step as this removes `six`
 - Add the `BACKUP_CREATE_DATABASE_STATEMENT` configuration option. This explicitly sets the `--databases` flag in `mysqldump` which causes `mysqldump` to add `CREATE DATABASE /*!32312 IF NOT EXISTS*/` and `USE` statements into the dump.
 
