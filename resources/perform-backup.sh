@@ -36,7 +36,7 @@ if [ "$TARGET_ALL_DATABASES" = "true" ]; then
     if [ "$has_failed" = false ]; then
         for DB in ${ALL_DATABASES_DATABASE_LIST}
         do
-        TARGET_DATABASE_NAMES="${TARGET_DATABASE_NAMES}${DB},"
+            TARGET_DATABASE_NAMES="${TARGET_DATABASE_NAMES}${DB},"
         done
         #Remove trailing comma
         TARGET_DATABASE_NAMES=${TARGET_DATABASE_NAMES%?}
