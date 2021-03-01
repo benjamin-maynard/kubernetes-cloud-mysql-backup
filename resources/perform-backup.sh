@@ -61,7 +61,7 @@ if [ "$has_failed" = false ]; then
                     BACKUP_COMPRESS_LEVEL="9"
                 fi
                 gzip -${BACKUP_COMPRESS_LEVEL} -c /tmp/"$DUMP" >/tmp/"$DUMP".gz
-                rm "$DUMP"
+                rm /tmp/"$DUMP"
                 DUMP="$DUMP".gz
             fi
 
@@ -69,7 +69,7 @@ if [ "$has_failed" = false ]; then
             if [ -n "$AGE_PUBLIC_KEY" ]; then
                 cat /tmp/"$DUMP" | age -a -r "$AGE_PUBLIC_KEY" >/tmp/"$DUMP".age
                 echo -e "Encrypted backup with age"
-                rm "$DUMP"
+                rm /tmp/"$DUMP"
                 DUMP="$DUMP".age
             fi
 
@@ -91,7 +91,7 @@ if [ "$has_failed" = false ]; then
                     echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
                     has_failed=true
                 fi
-                rm "$DUMP"
+                rm /tmp/"$DUMP"
             fi
 
             # If the Backup Provider is GCP, then upload to GCS
@@ -104,7 +104,7 @@ if [ "$has_failed" = false ]; then
                     echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $gcpoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
                     has_failed=true
                 fi
-                rm "$DUMP"
+                rm /tmp/"$DUMP"
             fi
 
         else
