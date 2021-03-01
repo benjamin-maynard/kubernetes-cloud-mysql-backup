@@ -57,7 +57,10 @@ if [ "$has_failed" = false ]; then
 
             # If the Backup Compress is true, then compress the file for .gz format
             if [ "$BACKUP_COMPRESS" = "true" ]; then
-                gzip -9 -c /tmp/"$DUMP" >/tmp/"$DUMP".gz
+                if [ -z "$BACKUP_COMPRESS_LEVEL" ]; then
+                    BACKUP_COMPRESS_LEVEL="9"
+                fi
+                gzip -${BACKUP_COMPRESS_LEVEL} -c /tmp/"$DUMP" >/tmp/"$DUMP".gz
                 rm "$DUMP"
                 DUMP="$DUMP".gz
             fi
