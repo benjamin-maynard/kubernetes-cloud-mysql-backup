@@ -28,11 +28,12 @@ fi
 if [ "$TARGET_ALL_DATABASES" = "true" ]; then
     ALL_DATABASES_EXCLUSION_LIST="'mysql','sys','tmp','information_schema','performance_schema'"
     ALL_DATABASES_SQLSTMT="SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN (${ALL_DATABASES_EXCLUSION_LIST})"
-    if ! ALL_DATABASES_DATABASE_LIST=`mysql -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT -ANe"${SQLSTMT}"`
+    if ! ALL_DATABASES_DATABASE_LIST=`mysql -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT -ANe"${ALL_DATABASES_SQLSTMT}"`
     then
         echo -e "Building list of all databases failed at $(date +'%d-%m-%Y %H:%M:%S')." | tee -a /tmp/kubernetes-cloud-mysql-backup.log
         has_failed=true
     fi
+    echo -e "Successfully built list of all databases (${ALL_DATABASES_DATABASE_LIST}) at $(date +'%d-%m-%Y %H:%M:%S')."
     for DB in ${ALL_DATABASES_DATABASE_LIST}
     do
       TARGET_DATABASE_NAMES="${TARGET_DATABASE_NAMES}${DB},"
@@ -57,6 +58,7 @@ if [ "$has_failed" = false ]; then
             # If the Backup Compress is true, then compress the file for .gz format
             if [ "$BACKUP_COMPRESS" = "true" ]; then
                 gzip -9 -c /tmp/"$DUMP" >/tmp/"$DUMP".gz
+                rm "$DUMP"
                 DUMP="$DUMP".gz
             fi
 
@@ -64,6 +66,7 @@ if [ "$has_failed" = false ]; then
             if [ -n "$AGE_PUBLIC_KEY" ]; then
                 cat /tmp/"$DUMP" | age -a -r "$AGE_PUBLIC_KEY" >/tmp/"$DUMP".age
                 echo -e "Encrypted backup with age"
+                rm "$DUMP"
                 DUMP="$DUMP".age
             fi
 
@@ -85,7 +88,7 @@ if [ "$has_failed" = false ]; then
                     echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
                     has_failed=true
                 fi
-
+                rm "$DUMP"
             fi
 
             # If the Backup Provider is GCP, then upload to GCS
@@ -98,7 +101,7 @@ if [ "$has_failed" = false ]; then
                     echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $gcpoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
                     has_failed=true
                 fi
-
+                rm "$DUMP"
             fi
 
         else
