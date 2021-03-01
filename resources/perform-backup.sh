@@ -33,13 +33,15 @@ if [ "$TARGET_ALL_DATABASES" = "true" ]; then
         echo -e "Building list of all databases failed at $(date +'%d-%m-%Y %H:%M:%S')." | tee -a /tmp/kubernetes-cloud-mysql-backup.log
         has_failed=true
     fi
-    echo -e "Successfully built list of all databases (${ALL_DATABASES_DATABASE_LIST}) at $(date +'%d-%m-%Y %H:%M:%S')."
-    for DB in ${ALL_DATABASES_DATABASE_LIST}
-    do
-      TARGET_DATABASE_NAMES="${TARGET_DATABASE_NAMES}${DB},"
-    done
-    #Remove trailing comma
-    TARGET_DATABASE_NAMES=${TARGET_DATABASE_NAMES%?}
+    if [ "$has_failed" = false ]; then
+        for DB in ${ALL_DATABASES_DATABASE_LIST}
+        do
+        TARGET_DATABASE_NAMES="${TARGET_DATABASE_NAMES}${DB},"
+        done
+        #Remove trailing comma
+        TARGET_DATABASE_NAMES=${TARGET_DATABASE_NAMES%?}
+        echo -e "Successfully built list of all databases (${TARGET_DATABASE_NAMES}) at $(date +'%d-%m-%Y %H:%M:%S')."
+    fi
 fi
 
 # Loop through all the defined databases, seperating by a ,
