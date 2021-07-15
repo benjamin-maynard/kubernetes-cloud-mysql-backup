@@ -27,7 +27,7 @@ ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
 ENV CLOUD_SDK_VERSION=348.0.0
-# Release commit for https://github.com/FiloSottile/age/releases/tag/v1.0.0-beta5 / https://github.com/FiloSottile/age/commit/31500bfa2f6a36d2958483fc54d6e3cc74154cbc
+# Release commit for https://github.com/FiloSottile/age/releases/tag/v1.0.0-rc.3/ https://github.com/FiloSottile/age/commit/9d4b2ae7ac0e2913839a545e16504e1ba0391124
 ENV AGE_VERSION=9d4b2ae7ac0e2913839a545e16504e1ba0391124
 ENV BACKUP_PROVIDER=aws
 

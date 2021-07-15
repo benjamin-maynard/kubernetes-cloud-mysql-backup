@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.6.0] - 15-07-2021
+### Add the ability to set custom mysql CLI parameters, target all databases without manually specifying, and bump versions
+- Added the ability to add custom mysql paramaters during the backup of databases via a new `BACKUP_ADDITIONAL_PARAMS` environment variable. Thanks & credit: [@cablespaghetti](https://github.com/cablespaghetti)
+- Added the ability to target all databases via a new `TARGET_ALL_DATABASES` environment variable. Thanks & credit: [@cablespaghetti](https://github.com/cablespaghetti)
+- Bumped the Alpine Linux version to `3.14.0` from `3.12.1`
+- Bumped the Google Cloud SDK version to `348.0.0` from `319.0.0`
+- Bumped the Age Encryption version to `9d4b2ae7ac0e2913839a545e16504e1ba0391124` (`v1.0.0-rc.3`) from `31500bfa2f6a36d2958483fc54d6e3cc74154cbc` (`v1.0.0-rc.3`)
+
 ## [v2.5.0] - 06-12-2020
 ### Add missing Python six package and `BACKUP_CREATE_DATABASE_STATEMENT` configuration option
 - Adds the missing Python [six](https://pypi.org/project/six/) package which was breaking awscli and removed the `py-pip` deletion step as this removes `six`
