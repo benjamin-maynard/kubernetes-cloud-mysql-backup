@@ -26,6 +26,9 @@ else
 fi
 
 if [ "$TARGET_ALL_DATABASES" = "true" ]; then
+    # Ignore any databases specified by TARGET_DATABASE_NAMES
+    TARGET_DATABASE_NAMES=""
+    # Build Database List
     ALL_DATABASES_EXCLUSION_LIST="'mysql','sys','tmp','information_schema','performance_schema'"
     ALL_DATABASES_SQLSTMT="SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN (${ALL_DATABASES_EXCLUSION_LIST})"
     if ! ALL_DATABASES_DATABASE_LIST=`mysql -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT -ANe"${ALL_DATABASES_SQLSTMT}"`
