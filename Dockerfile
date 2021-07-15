@@ -18,7 +18,7 @@ RUN apk -v --update add \
     gzip \
     go \
     git && \
-    pip3 install --upgrade six awscli s3cmd python-magic && \
+    pip3 install --upgrade awscli s3cmd python-magic && \
     rm /var/cache/apk/*
 
 # Set Default Environment Variables
