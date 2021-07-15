@@ -432,12 +432,3 @@ jobs:
           echo "Removing /tmp/world.sql and /tmp/world.sql.age"
           rm /tmp/world.sql
           rm /tmp/world.sql.age
-      -
-        name: Comment on PR with Success
-        run: |
-          curl -X POST -H "Accept: application/vnd.github.v3+json" -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' https://api.github.com/repos/benjamin-maynard/kubernetes-cloud-mysql-backup/issues/${{ github.event.inputs.prID }})/comments -d '{"body":":white_check_mark: All tests passed successfully. Please see the [Github Actions Run](https://github.com/benjamin-maynard/kubernetes-cloud-mysql-backup/actions/runs/${{ github.run_id }}) for more details.\n\n**Note:** Tests are performed using the latest [pr-tests.yaml](https://github.com/benjamin-maynard/kubernetes-cloud-mysql-backup/blob/master/.github/workflows/run-pr-tests.yaml) config as defined in the HEAD of the master branch. If this PR includes modified set of tests they have not been executed."}'
-      -
-        name: Comment on PR with Failure
-        if: ${{ failure() }}
-        run: |
-          curl -X POST -H "Accept: application/vnd.github.v3+json" -H 'Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' https://api.github.com/repos/benjamin-maynard/kubernetes-cloud-mysql-backup/issues/${{ github.event.inputs.prID }})/comments -d '{"body":":x: Tests did not complete successfully. Please see the [Github Actions Run](https://github.com/benjamin-maynard/kubernetes-cloud-mysql-backup/actions/runs/${{ github.run_id }}) for more details.\n\n**Note:** Tests are performed using the latest [pr-tests.yaml](https://github.com/benjamin-maynard/kubernetes-cloud-mysql-backup/blob/master/.github/workflows/run-pr-tests.yaml) config as defined in the HEAD of the master branch. If this PR includes modified set of tests they have not been executed."}'
