@@ -1,1 +1,0 @@
-:white_check_mark: All tests successfully passed. See [run](https://github.com/benjamin-maynard/kubernetes-cloud-mysql-backup/actions/runs/{workflow_id}) for more details :fire:

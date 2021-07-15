@@ -1,24 +1,29 @@
-name: Runs tests on a PR
-on: 
-  issue_comment:
-    types: [created]
+name: Run tests on a PR
+on:
+  workflow_dispatch:
+    inputs:
+      prID:
+        description: 'The ID of the Pull Request to test'
+        required: true
 jobs:
   test-pr:
     runs-on: ubuntu-18.04
     steps:
       -
-        name: Exit if not a PR comment
-        if: ${{ !github.event.issue.pull_request }}
+        name: Get PR Info for Tests
+        id: get-pr-info
         run: |
-          exit 1
-      -
-        name: Determine if there is authority to continue
-        if: ${{ github.event.comment.user.login != 'benjamin-maynard' || github.event.comment.body  != '[Run PR Tests]' }}
-        run: |
-          exit 1
+          PRINFO=$(curl -H "Accept: application/vnd.github.v3+json"   https://api.github.com/repos/benjamin-maynard/kubernetes-cloud-mysql-backup/pulls/${{ github.event.inputs.prID }})
+          PRHEAD=$(echo $PRINFO | jq -r .head.repo.full_name)
+          PRSHA=$(echo $PRINFO | jq -r .head.sha)
+          echo "::set-output name=PRHEAD::$PRHEAD"
+          echo "::set-output name=PRSHA::$PRSHA"
       -
         name: Checkout
         uses: actions/checkout@v2
+        with:
+          repository: ${{ steps.get-pr-info.outputs.PRHEAD }}
+          ref: ${{ steps.get-pr-info.outputs.PRSHA }}
       - 
         name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@master
@@ -84,6 +89,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -123,6 +131,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -144,6 +155,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -164,6 +178,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -186,6 +203,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -210,6 +230,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -236,6 +259,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -259,6 +285,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -278,6 +307,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -299,6 +331,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -320,6 +355,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -340,6 +378,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -362,6 +403,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -386,6 +430,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -412,6 +459,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -435,6 +485,9 @@ jobs:
           # Strip the "Dump Completed on" line
           echo "Stripping Dump Completed On line from downloaded backup..."
           sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Strip the "MariaDB dump" line
+          echo "Stripping MariaDB dump line from downloaded backup..."
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
@@ -442,18 +495,3 @@ jobs:
           echo "Removing /tmp/world.sql and /tmp/world.sql.age"
           rm /tmp/world.sql
           rm /tmp/world.sql.age
-      -
-        name: Comment on PR with Successful
-        uses: benjamin-maynard/comment-on-pr@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          filename: .github/workflows/SUCCESS.md
-      -
-        name: Comment on PR with Failure
-        uses: benjamin-maynard/comment-on-pr@master
-        if: ${{ failure() }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          filename: .github/workflows/FAILURE.md
