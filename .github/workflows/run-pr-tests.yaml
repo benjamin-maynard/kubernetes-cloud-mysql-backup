@@ -50,7 +50,7 @@ jobs:
         run: |
           git clone https://filippo.io/age
           cd age
-          git checkout 31500bfa2f6a36d2958483fc54d6e3cc74154cbc
+          git checkout 9d4b2ae7ac0e2913839a545e16504e1ba0391124
           go build -o . filippo.io/age/cmd/...
           sudo cp age /usr/local/bin/   
       -
