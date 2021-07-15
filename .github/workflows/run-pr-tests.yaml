@@ -99,6 +99,24 @@ jobs:
           echo "Removing /tmp/world.sql"
           rm /tmp/world.sql
       -
+        name: Test GCP Standard All Databases Backup
+        run: |
+          # Perform database backup
+          echo "Performing database backup..."
+          docker run -e GCP_GCLOUD_AUTH=${{ secrets.GCP_SA }} -e GCP_BUCKET_BACKUP_PATH="/${{ github.sha }}" -e TARGET_ALL_DATABASES="true" --env-file tests/configs/gcp.env --network backup-net kubernetes-cloud-mysql-backup:test
+          # Fetch backup file from GCS
+          echo "Fetching database backup..."
+          gsutil cp gs://kubernetes-cloud-mysql-backup-github-testing/${{ github.sha }}/world.sql /tmp/world.sql
+          # Strip the "Dump Completed on" line
+          echo "Stripping Dump Completed On line from downloaded backup..."
+          sed -i '/-- Dump completed on/d' /tmp/world.sql
+          # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
+          echo "Comparing database backup to known good database..."
+          diff tests/db/world.sql /tmp/world.sql
+          # Remove /tmp/world.sql
+          echo "Removing /tmp/world.sql"
+          rm /tmp/world.sql
+      -
         name: Test GCP Compressed Backup
         run: |
           # Perform database backup
