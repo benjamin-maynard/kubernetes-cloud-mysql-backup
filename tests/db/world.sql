@@ -1,4 +1,3 @@
--- MariaDB dump 10.17  Distrib 10.4.15-MariaDB, for Linux (x86_64)
 --
 -- Host: db-server    Database: world
 -- ------------------------------------------------------
