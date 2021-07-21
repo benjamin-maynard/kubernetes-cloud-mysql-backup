@@ -25,6 +25,13 @@ else
     BACKUP_CREATE_DATABASE_STATEMENT=""
 fi
 
+# Add prefix to backup name
+if [ "$DATE_PREFIX" = "true" ]; then
+    DATE_PREFIX=$(date +'%Y/%m/%d/')
+else
+    DATE_PREFIX=""
+fi
+
 if [ "$TARGET_ALL_DATABASES" = "true" ]; then
     # Ignore any databases specified by TARGET_DATABASE_NAMES
     if [ ! -z "$TARGET_DATABASE_NAMES" ]
@@ -94,7 +101,7 @@ if [ "$has_failed" = false ]; then
                 fi
 
                 # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
-                if awsoutput=$(aws $ENDPOINT s3 cp /tmp/$DUMP s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$DUMP 2>&1); then
+                if awsoutput=$(aws $ENDPOINT s3 cp /tmp/$DUMP s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$DATE_PREFIX$DUMP 2>&1); then
                     echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
                 else
                     echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
@@ -107,7 +114,7 @@ if [ "$has_failed" = false ]; then
             if [ "$BACKUP_PROVIDER" = "gcp" ]; then
 
                 # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
-                if gcpoutput=$(gsutil cp /tmp/$DUMP gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/$DUMP 2>&1); then
+                if gcpoutput=$(gsutil cp /tmp/$DUMP gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/$DATE_PREFIX$DUMP 2>&1); then
                     echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
                 else
                     echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $gcpoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
