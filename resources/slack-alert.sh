@@ -1,5 +1,4 @@
-#/bin/sh
-
+#!/bin/sh
 
 # Check if there is any value in $2. If so, post an entry to the Slack channel with log information. If not, send a general message that all databases successfully completed
 if [ "$(printf '%s' "$2")" == '' ]

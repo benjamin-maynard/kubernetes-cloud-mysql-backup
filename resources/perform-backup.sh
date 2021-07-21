@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 # Set the has_failed variable to false. This will change if any of the subsequent database backups/uploads fail.
 has_failed=false
