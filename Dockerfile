@@ -1,5 +1,5 @@
 # Set the base image
-FROM alpine:3.14.0
+FROM alpine:3.15.0
 
 # Install required packages
 RUN apk -v --update add \
@@ -14,7 +14,7 @@ RUN apk -v --update add \
     bash \
     libc6-compat \
     gnupg \
-    coreutils \        
+    coreutils \
     gzip \
     go \
     git && \
@@ -26,9 +26,9 @@ ENV BACKUP_CREATE_DATABASE_STATEMENT=false
 ENV TARGET_DATABASE_PORT=3306
 ENV SLACK_ENABLED=false
 ENV SLACK_USERNAME=kubernetes-s3-mysql-backup
-ENV CLOUD_SDK_VERSION=348.0.0
-# Release commit for https://github.com/FiloSottile/age/releases/tag/v1.0.0-rc.3/ https://github.com/FiloSottile/age/commit/9d4b2ae7ac0e2913839a545e16504e1ba0391124
-ENV AGE_VERSION=9d4b2ae7ac0e2913839a545e16504e1ba0391124
+ENV CLOUD_SDK_VERSION=367.0.0
+# Release commit for https://github.com/FiloSottile/age/tree/v1.0.0
+ENV AGE_VERSION=552aa0a07de0b42c16126d3107bd8895184a69e7
 ENV BACKUP_PROVIDER=aws
 
 # Install FiloSottile/age (https://github.com/FiloSottile/age)
