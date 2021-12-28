@@ -24,7 +24,7 @@ jobs:
         with:
           repository: ${{ steps.get-pr-info.outputs.PRHEAD }}
           ref: ${{ steps.get-pr-info.outputs.PRSHA }}
-      - 
+      -
         name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@master
         with:
@@ -50,15 +50,15 @@ jobs:
         run: |
           git clone https://filippo.io/age
           cd age
-          git checkout 9d4b2ae7ac0e2913839a545e16504e1ba0391124
+          git checkout 552aa0a07de0b42c16126d3107bd8895184a69e7
           go build -o . filippo.io/age/cmd/...
-          sudo cp age /usr/local/bin/   
+          sudo cp age /usr/local/bin/
       -
         name: Build kubernetes-cloud-mysql-backup, pull mysql and setup Docker
         run: |
           # Build Container Locally for testing
           echo "Building kubernetes-cloud-mysql-backup..."
-          docker build -t kubernetes-cloud-mysql-backup:test . 
+          docker build -t kubernetes-cloud-mysql-backup:test .
           # Pull MySQL
           echo "Pulling mysql:5.7.32..."
           docker pull mysql:5.7.32
@@ -112,7 +112,7 @@ jobs:
           sed -i '/-- Dump completed on/d' /tmp/world.sql
           # Strip the "MariaDB dump" line
           echo "Stripping MariaDB dump line from downloaded backup..."
-          sed -i '/-- MariaDB dump/d' /tmp/world.sql          
+          sed -i '/-- MariaDB dump/d' /tmp/world.sql
           # Compare the database backups, diff will exit with 1 if the files do not match causing the workflow to fail
           echo "Comparing database backup to known good database..."
           diff tests/db/world.sql /tmp/world.sql
