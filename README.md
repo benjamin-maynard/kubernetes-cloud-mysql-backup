@@ -40,8 +40,7 @@ The below table lists all of the Environment Variables that are configurable for
 | SLACK_ENABLED                    | **(Optional)** (true/false) Enable or disable the Slack Integration (Default False).                                                                                                                                                                  |
 | SLACK_USERNAME                   | **(Optional)** (true/false) Username to use for the Slack Integration (Default: kubernetes-cloud-mysql-backup).                                                                                                                                       |
 | SLACK_CHANNEL                    | **(Required if Slack enabled)** Slack Channel the WebHook is configured for.                                                                                                                                                                          |
-| SLACK_PROXY                    | **(Required if Slack enabled)** Proxy URL if Slack your is behind proxy example 
-<[protocol://][user:password@]proxyhost[:port]>.                                                                                                                                                                         |
+| SLACK_PROXY                    | **(Required if Slack enabled)** Proxy URL if Slack your is behind proxy.                                                                                                                                                                         |
 | SLACK_WEBHOOK_URL                | **(Required if Slack enabled)** What is the Slack WebHook URL to post to? Should be configured using a Secret in Kubernetes.                                                                                                                          |
 
 
