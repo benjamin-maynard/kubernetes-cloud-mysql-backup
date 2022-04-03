@@ -26,7 +26,7 @@ jobs:
           ref: ${{ steps.get-pr-info.outputs.PRSHA }}
       -
         name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: maynard-io-public
           service_account_key: ${{ secrets.GCP_SA }}
