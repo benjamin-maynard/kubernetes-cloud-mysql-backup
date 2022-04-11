@@ -33,8 +33,8 @@ if [ "$TARGET_ALL_DATABASES" = "true" ]; then
         TARGET_DATABASE_NAMES=""
     fi
     # Build Database List
-    ALL_DATABASES_EXCLUSION_LIST="'mysql','sys','tmp','information_schema','performance_schema'"
-    ALL_DATABASES_SQLSTMT="SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN (${ALL_DATABASES_EXCLUSION_LIST})"
+    ALL_DATABASES_EXCLUSION_LIST="'mysql','sys','tmp','information_schema','performance_schema','metrics_schema'"
+    ALL_DATABASES_SQLSTMT="SELECT schema_name FROM information_schema.schemata WHERE lower(schema_name) NOT IN (${ALL_DATABASES_EXCLUSION_LIST})"
     if ! ALL_DATABASES_DATABASE_LIST=`mysql -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT -ANe"${ALL_DATABASES_SQLSTMT}"`
     then
         echo -e "Building list of all databases failed at $(date +'%d-%m-%Y %H:%M:%S')." | tee -a /tmp/kubernetes-cloud-mysql-backup.log
