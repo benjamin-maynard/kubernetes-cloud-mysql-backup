@@ -1,0 +1,41 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: my-database-backup
+spec:
+  schedule: "0 01 * * *"
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          containers:
+          - name: my-database-backup
+            image: "ghcr.io/benjamin-maynard/kubernetes-cloud-mysql-backup:${IMAGE_VERSION}"
+            imagePullPolicy: Always
+            env:
+              - name: GCP_GCLOUD_AUTH
+                valueFrom:
+                   secretKeyRef:
+                     name: my-database-backup
+                     key: gcp_gcloud_auth
+              - name: BACKUP_PROVIDER
+                value: "gcp"
+              - name: GCP_BUCKET_NAME
+                value: "${GCP_BUCKET_NAME}"
+              - name: GCP_BUCKET_BACKUP_PATH
+                value: "/database/infocamere/backups"
+              - name: TARGET_DATABASE_HOST
+                value: "${MY_SQL_DB_HOST}"
+              - name: TARGET_ALL_DATABASES
+                value: "true"
+              - name: TARGET_DATABASE_USER
+                value: "${MY_SQL_DB_USER}"
+              - name: TARGET_DATABASE_PASSWORD
+                valueFrom:
+                   secretKeyRef:
+                     name: my-database-backup
+                     key: database_password
+          restartPolicy: Never
