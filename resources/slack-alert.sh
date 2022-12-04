@@ -10,4 +10,8 @@ PAYLOAD="payload={\"channel\": \"$SLACK_CHANNEL\", \"username\": \"$SLACK_USERNA
 fi
 
 # Send Slack message
-curl -s -X POST --data-urlencode "$PAYLOAD" "$SLACK_WEBHOOK_URL" > /dev/null
+if [ -n "$SLACK_PROXY" ]; then
+    curl -s --proxy $SLACK_PROXY -X POST --data-urlencode "$PAYLOAD" "$SLACK_WEBHOOK_URL" > /dev/null
+else
+    curl -s -X POST --data-urlencode "$PAYLOAD" "$SLACK_WEBHOOK_URL" > /dev/null
+fi
