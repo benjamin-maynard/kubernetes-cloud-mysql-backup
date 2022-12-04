@@ -2,126 +2,116 @@ package config
 
 import (
 	"context"
-	"fmt"
-	"reflect"
-	"strings"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/sethvargo/go-envconfig"
 )
 
-// NewConfigFromEnvironment returns a new configuration from the environment
-func NewConfigFromEnvironment(ctx context.Context) (*AppConfig, error) {
+// BackupDestinationConfig is used for storing the configuration for backup storage providers
+type BackupDestinationConfig struct {
+	// The name of the backup provider to use, either "gcp" or "aws"
+	BackupProvider string `env:"BACKUP_PROVIDER,default=aws" validate:"required,oneof=aws gcp"`
 
-	var c AppConfig
-	err := envconfig.Process(ctx, &c)
+	//
+	// Google Cloud GCS Config
+	//
+	// A base64 encoded GCP Service Account Key. This should almost never be set. You should use Workload Identity
+	// which allows the container to get short lived credentials from the Metadata Server which is much more
+	// secure
+	GCPServiceAccountKey string `env:"GCP_SERVICE_ACCOUNT_KEY" validate:"omitempty,base64"`
+	// The name of the Google Cloud Storage Bucket where backups should be stored.
+	//  You should not include the gs:// prefix. Only the bucket name
+	GCPBucketName string `env:"GCS_BUCKET_NAME" validate:"required_if=BackupProvider gcp"`
+	// The path to store the backup file in GCS. This should not contain a trailing slash or file name
+	GCPBucketBackupPath string `env:"GCS_BUCKET_BACKUP_PATH" validate:"required_if=BackupProvider gcp"`
 
-	if err != nil {
-		return &c, err
-	}
-
-	err = c.Validate()
-	if err != nil {
-		return &c, err
-	}
-
-	return &c, nil
-
+	//
+	// AWS S3 Config
+	//
+	// The AWS Access Key ID which will be used for authenticating to the bucket
+	AWSAccessKeyID string `env:"AWS_ACCESS_KEY_ID" validate:"required_if=BackupProvider aws"`
+	// The AWS Secret Access Key which will be used for authenticating to the bucket
+	AWSSecretAccessKey string `env:"AWS_SECRET_ACCESS_KEY"  validate:"required_if=BackupProvider aws"`
+	// The region that the AWS S3 bucket is located
+	AWSDefaultRegion string `env:"AWS_DEFAULT_REGION"  validate:"required_if=BackupProvider aws"`
+	// The name of the S3 Bucket where the backup will be stored
+	AWSBucketName string `env:"AWS_BUCKET_NAME"  validate:"required_if=BackupProvider aws"`
+	// The path to store the backup file in s3. This should not contain a trailing slash or file name
+	AWSBucketBackupPath string `env:"AWS_BUCKET_BACKUP_PATH"  validate:"required_if=BackupProvider aws"`
+	// The S3 Endpoint to use if using a non AWS S3 compatible bucket
+	AWSS3Endpoint string `env:"AWS_S3_ENDPOINT"`
 }
 
-// Validate ensures that a configuration is valid
-func (c *AppConfig) Validate() error {
-
-	// Reflect the struct and determine the type
-	v := reflect.ValueOf(*c)
-	typeOfS := v.Type()
-
-	// Loop through all of the fields in the struct
-	for i := 0; i < v.NumField(); i++ {
-
-		// Check if we have the requiredOnParentValue set
-		val := typeOfS.Field(i).Tag.Get("requiredOnParentValue")
-
-		fmt.Println(val)
-
-		// If the value is not empty, then get the value of the parent environment variable
-		if val != "" {
-
-			// Determine the environment variable we are looking for
-			envVar := strings.Split(val, "=")[0]      // The name of the environment variable we are looking for in the "env" struct tag
-			validateVal := strings.Split(val, "=")[1] // The value of that struct value that should trigger validation
-
-			// Find the first matching field with the struct tag "env" set to the desired environment variable
-			fieldVal, err := getFieldValueByStructTagValue(*c, "env", envVar)
-			if err != nil {
-				return err
-			}
-
-			// Check if we should validate this field is not empty
-			if fieldVal != validateVal {
-
-				if fmt.Sprintf("%v", v.Field(i).Interface()) == "" {
-					return fmt.Errorf("environment variable '%s' was expected because '%s' was set to '%s' but no value was found", typeOfS.Field(i).Tag.Get("env"), envVar, validateVal)
-				}
-
-			}
-
-		}
-
-	}
-
-	return nil
-
+// DatabaseBackupConfig is used for storing the configuration for the databases that need to be
+// backed up
+type DatabaseBackupConfig struct {
+	// The hostname or IP addess of the MySQL host to backup
+	TargetDatabaseHost string `env:"TARGET_DATABASE_HOST" validate:"required"`
+	// The port that the MySQL host is listening on
+	TargetDatabasePort int `env:"TARGET_DATABASE_PORT,default=3306" validate:"gte=0,lte=65535"`
+	// The username to use for authenticating to the MySQL Host
+	TargetDatabaseUser string `env:"TARGET_DATABASE_USER" validate:"required"`
+	// The password for authenticating to the MySQL Host
+	TargetDatabasePassword string `env:"TARGET_DATABASE_PASSWORD" validate:"required"`
+	// The Name(s) of the databases to dump. Should be comma separated
+	TargetDatabaseNames string `env:"TARGET_DATABASE_NAMES" validate:"required_if=TargetAllDatabases false"`
+	// If set to true, all databases will be backed up
+	TargetAllDatabases bool `env:"TARGET_ALL_DATABASES,default=false"`
+	// If set to true, the "CREATE DATABASE" and "USE" statements will be added to the MySQL backup
+	BackupCreateDatabaseStatement bool `env:"BACKUP_CREATE_DATABASE_STATEMENT,default=false"`
+	// Custom additional flags to add to the mysql dump command
+	BackupAdditionalParams string `env:"BACKUP_ADDITIONAL_PARAMS"`
+	// If set to true, the backup will be compressed
+	BackupCompress bool `env:"BACKUP_COMPRESS,default=false"` // Enable gzip backup compression
+	// The GZIP compression level to use for the backup
+	BackupCompressLevel int `env:"BACKUP_COMPRESS_LEVEL,default=9" validate:"gte=1,lte=9"`
+	// The Public Key to use for the Age encryption
+	// Public key used to encrypt the backup with age
+	AgePublicKey string `env:"AGE_PUBLIC_KEY"`
+	// Golang time formatting string used to prefix to the backup file name
+	BackupTimestamp string `env:"BACKUP_TIMESTAMP"`
 }
 
-// getFieldValueByStructTagValue returns the value of a struct field that has the specified struct tag and value
-// it returns the first match only
-func getFieldValueByStructTagValue(c interface{}, tag, value string) (string, error) {
-
-	v := reflect.ValueOf(c)
-	typeOfS := v.Type()
-
-	for i := 0; i < v.NumField(); i++ {
-
-		if typeOfS.Field(i).Tag.Get(tag) == value {
-			return fmt.Sprintf("%v", v.Field(i).Interface()), nil
-		}
-
-	}
-
-	return "", fmt.Errorf("found no matching field with struct tag '%s' and value '%s'", tag, value)
-
+type SlackNotificationConfig struct {
+	// If set to true, backups to slack are enabled
+	SlackEnabled bool `env:"SLACK_ENABLED,default=false"`
+	// The username to use for posting Slack messages
+	SlackUsername string `env:"SLACK_USERNAME" validate:"required_if=SlackEnabled true"`
+	// The Slack channel name to publish the notification to
+	SlackChannel string `env:"SLACK_CHANNEL" validate:"required_if=SlackEnabled true"`
+	// The Webhook URL where the Slack message should be POST'ed to
+	SlackWebhookURL string `env:"SLACK_WEBHOOK_URL" validate:"required_if=SlackEnabled true,omitempty,url"`
+	// The Proxy URL to use for the Slack network call
+	SlackProxy string `env:"SLACK_PROXY"` // Proxy url to use for Slack network call
 }
 
-// The configuration of kubernetes-cloud-mysql-backup
+// The overall configuration for the application
 type AppConfig struct {
-	BackupProvider                string `env:"BACKUP_PROVIDER" default:"aws"`                               // The name of the backup provider to use, either "gcp" or "aws"
-	GCPServiceAccountKey          string `env:"GCP_SERVICE_ACCOUNT_KEY"`                                     // Base64 encoded GCP Service Account Key. This should only be set if you are running outside of GCP (No Metadata Server)
-	GCSBucketName                 string `env:"GCS_BUCKET_NAME"`                                             // The name of the GCS Bucket to store the backups in
-	GCSBucketBackupPath           string `env:"GCS_BUCKET_BACKUP_PATH"`                                      // The path to store the backup file in GCS. Should not contain a trailing slash or file name
-	AWSAccessKeyID                string `env:"AWS_ACCESS_KEY_ID"`                                           // AWS IAM Access Key ID for accessing the S3 Bucket
-	AWSSecretAccessKey            string `env:"AWS_SECRET_ACCESS_KEY" `                                      // AWS IAM Secret Access Key for accessing the S3 Bucket
-	AWSDefaultRegion              string `env:"AWS_DEFAULT_REGION""`                                         // Region of the S3 Bucket
-	AWSBucketName                 string `env:"AWS_BUCKET_NAME" requiredOnParentValue:"BACKUP_PROVIDER=aws"` // Name of the S3 Bucket
-	AWSBucketBackupPath           string `env:"AWS_BUCKET_BACKUP_PATH"`                                      // The path to store the backup file in S3. Should not contain a trailing slash or file name
-	AWSS3Endpoint                 string `env:"AWS_S3_ENDPOINT"`                                             // The S3 Endpoint if using a non AWS S3 compatible bucket
-	TargetDatabaseHost            string `env:"TARGET_DATABASE_HOST,required"`                               // Hostname or IP address of the MySQL Host
-	TargetDatabasePort            string `env:"TARGET_DATABASE_PORT,default=3306"`                           // Port MySQL is listening on (Default: 3306)
-	TargetDatabaseUser            string `env:"TARGET_DATABASE_USER,required"`                               // Username to use for authenticating to the MySQL Host
-	TargetDatabasePassword        string `env:"TARGET_DATABASE_PASSWORD,required"`                           // Password for authenticating to the MySQL Host
-	TargetDatabaseNames           string `env:"TARGET_DATABASE_NAMES"`                                       // Name(s) of the databases to dump. Should be comma separated
-	TargetAllDatabases            bool   `env:"TARGET_ALL_DATABASES,default=false"`                          // Dump all databases
-	BackupCreateDatabaseStatement bool   `env:"BACKUP_CREATE_DATABASE_STATEMENT,default=false"`              // Add the "CREATE DATABASE" and "USE" statements to the MySQL backup
-	BackupAdditionalParams        string `env:"BACKUP_ADDITIONAL_PARAMS"`                                    // Custom additional parameters to add to the mysqldump command
-	BackupCompress                bool   `env:"BACKUP_COMPRESS,default=false"`                               // Enable gzip backup compression
-	BackupCompressLevel           int    `env:"BACKUP_COMPRESS_LEVEL,default=9"`                             // gzip compression level to use for the backup
-	AgePublicKey                  string `env:"AGE_PUBLIC_KEY"`                                              // Public key used to encrypt the backup with age
-	SlackEnabled                  bool   `env:"SLACK_ENABLED,default=false"`                                 // Enable the Slack integration
-	SlackUsername                 string `env:"SLACK_USERNAME"`                                              // Username to use for the slack integration
-	SlackChannel                  string `env:"SLACK_CHANNEL"`                                               // Slack channel name
-	SlackWebhookURL               string `env:"SLACK_WEBHOOK_URL"`                                           // Webhook URL to publish Slack messages
-	SlackProxy                    string `env:"SLACK_PROXY"`                                                 // Proxy url to use for Slack network call
+	BackupDestinationConfig
+	DatabaseBackupConfig
+	SlackNotificationConfig
 }
 
-// type BackupDestination interface {
-// 	Upload(filePath string) error
-// }
+// NewConfigFromEnvironment returns a new application configuration, loading the config
+// from environment variables, and validating it. If any configuration errors are detected
+// an error is returned
+func NewConfigFromEnvironment() (AppConfig, error) {
+
+	// Create an empty AppConfig
+	config := AppConfig{}
+
+	// Load the environment variables
+	ctx := context.Background()
+	if err := envconfig.Process(ctx, &config); err != nil {
+		return AppConfig{}, err
+	}
+
+	// Run additional validation
+	validate := validator.New()
+	if err := validate.Struct(config); err != nil {
+		return AppConfig{}, err
+	}
+
+	return config, nil
+
+}
