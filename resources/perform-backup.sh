@@ -2,6 +2,13 @@
 
 # Set the has_failed variable to false. This will change if any of the subsequent database backups/uploads fail.
 has_failed=false
+BASE_DUMP_PATH=/tmp/full_database_backups/
+
+# Create Document Root if it doesn't exist
+if [ ! -d "$BASE_DUMP_PATH" ]; then
+    mkdir -p "$BASE_DUMP_PATH"
+fi
+
 
 # Create the GCloud Authentication file if set
 if [ ! -z "$GCP_GCLOUD_AUTH" ]; then
@@ -55,73 +62,81 @@ fi
 if [ "$has_failed" = false ]; then
     for CURRENT_DATABASE in ${TARGET_DATABASE_NAMES//,/ }; do
 
-        DUMP=$CURRENT_DATABASE$(date +$BACKUP_TIMESTAMP).sql
+        DUMP=$BASE_DUMP_PATH$CURRENT_DATABASE$(date +$BACKUP_TIMESTAMP).sql
         # Perform the database backup. Put the output to a variable. If successful upload the backup to S3, if unsuccessful print an entry to the console and the log, and set has_failed to true.
-        if sqloutput=$(mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $BACKUP_ADDITIONAL_PARAMS $BACKUP_CREATE_DATABASE_STATEMENT $CURRENT_DATABASE 2>&1 >/tmp/$DUMP); then
+        if sqloutput=$(mysqldump -u $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p$TARGET_DATABASE_PASSWORD -P $TARGET_DATABASE_PORT $BACKUP_ADDITIONAL_PARAMS $BACKUP_CREATE_DATABASE_STATEMENT $CURRENT_DATABASE 2>&1 >$DUMP); then
 
             echo -e "Database backup successfully completed for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
-
-            # Convert BACKUP_COMPRESS to lowercase before executing if statement
-            BACKUP_COMPRESS=$(echo "$BACKUP_COMPRESS" | awk '{print tolower($0)}')
-
-            # If the Backup Compress is true, then compress the file for .gz format
-            if [ "$BACKUP_COMPRESS" = "true" ]; then
-                if [ -z "$BACKUP_COMPRESS_LEVEL" ]; then
-                    BACKUP_COMPRESS_LEVEL="9"
-                fi
-                gzip -${BACKUP_COMPRESS_LEVEL} -c /tmp/"$DUMP" >/tmp/"$DUMP".gz
-                rm /tmp/"$DUMP"
-                DUMP="$DUMP".gz
-            fi
-
-            # Optionally encrypt the backup
-            if [ -n "$AGE_PUBLIC_KEY" ]; then
-                cat /tmp/"$DUMP" | age -a -r "$AGE_PUBLIC_KEY" >/tmp/"$DUMP".age
-                echo -e "Encrypted backup with age"
-                rm /tmp/"$DUMP"
-                DUMP="$DUMP".age
-            fi
-
-            # Convert BACKUP_PROVIDER to lowercase before executing if statement
-            BACKUP_PROVIDER=$(echo "$BACKUP_PROVIDER" | awk '{print tolower($0)}')
-
-            # If the Backup Provider is AWS, then upload to S3
-            if [ "$BACKUP_PROVIDER" = "aws" ]; then
-
-                # If the AWS_S3_ENDPOINT variable isn't empty, then populate the --endpoint-url parameter to use a custom S3 compatable endpoint
-                if [ ! -z "$AWS_S3_ENDPOINT" ]; then
-                    ENDPOINT="--endpoint-url=$AWS_S3_ENDPOINT"
-                fi
-
-                # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
-                if awsoutput=$(aws $ENDPOINT s3 cp /tmp/$DUMP s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$DUMP 2>&1); then
-                    echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
-                else
-                    echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
-                    has_failed=true
-                fi
-                rm /tmp/"$DUMP"
-            fi
-
-            # If the Backup Provider is GCP, then upload to GCS
-            if [ "$BACKUP_PROVIDER" = "gcp" ]; then
-
-                # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
-                if gcpoutput=$(gsutil cp /tmp/$DUMP gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/$DUMP 2>&1); then
-                    echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
-                else
-                    echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $gcpoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
-                    has_failed=true
-                fi
-                rm /tmp/"$DUMP"
-            fi
-
         else
             echo -e "Database backup FAILED for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
             has_failed=true
         fi
 
     done
+fi
+
+if [ "$has_failed" = false ]; then
+
+    # Convert BACKUP_COMPRESS to lowercase before executing if statement
+    BACKUP_COMPRESS=$(echo "$BACKUP_COMPRESS" | awk '{print tolower($0)}')
+    
+    # tar folder 
+    DUMP=$(date +$BACKUP_TIMESTAMP)
+    tar -zcvf /tmp/"$DUMP".tar.gz $BASE_DUMP_PATH
+    rm -rf $BASE_DUMP_PATH
+    DUMP="$DUMP".tar.gz
+
+    # If the Backup Compress is true, then compress the file for .gz format
+    if [ "$BACKUP_COMPRESS" = "true" ]; then
+        if [ -z "$BACKUP_COMPRESS_LEVEL" ]; then
+            BACKUP_COMPRESS_LEVEL="9"
+        fi
+        gzip -${BACKUP_COMPRESS_LEVEL} -c /tmp/"$DUMP" >/tmp/"$DUMP".gz
+        rm /tmp/"$DUMP"
+        DUMP="$DUMP".gz
+    fi
+
+    # Optionally encrypt the backup
+    if [ -n "$AGE_PUBLIC_KEY" ]; then
+        cat /tmp/"$DUMP" | age -a -r "$AGE_PUBLIC_KEY" >/tmp/"$DUMP".age
+        echo -e "Encrypted backup with age"
+        rm /tmp/"$DUMP"
+        DUMP="$DUMP".age
+    fi
+
+    # Convert BACKUP_PROVIDER to lowercase before executing if statement
+    BACKUP_PROVIDER=$(echo "$BACKUP_PROVIDER" | awk '{print tolower($0)}')
+
+    # If the Backup Provider is AWS, then upload to S3
+    if [ "$BACKUP_PROVIDER" = "aws" ]; then
+
+        # If the AWS_S3_ENDPOINT variable isn't empty, then populate the --endpoint-url parameter to use a custom S3 compatable endpoint
+        if [ ! -z "$AWS_S3_ENDPOINT" ]; then
+            ENDPOINT="--endpoint-url=$AWS_S3_ENDPOINT"
+        fi
+
+        # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
+        if awsoutput=$(aws $ENDPOINT s3 cp /tmp/$DUMP s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$DUMP 2>&1); then
+            echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
+        else
+            echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
+            has_failed=true
+        fi
+        rm /tmp/"$DUMP"
+    fi
+
+    # If the Backup Provider is GCP, then upload to GCS
+    if [ "$BACKUP_PROVIDER" = "gcp" ]; then
+
+        # Perform the upload to S3. Put the output to a variable. If successful, print an entry to the console and the log. If unsuccessful, set has_failed to true and print an entry to the console and the log
+        if gcpoutput=$(gsutil cp /tmp/$DUMP gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/$DUMP 2>&1); then
+            echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
+        else
+            echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $gcpoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
+            has_failed=true
+        fi
+        rm /tmp/"$DUMP"
+    fi
 fi
 
 # Check if any of the backups have failed. If so, exit with a status of 1. Otherwise exit cleanly with a status of 0.
@@ -143,11 +158,42 @@ if [ "$has_failed" = true ]; then
     exit 1
 
 else
-
+    
     # If Slack alerts are enabled, send a notification that all database backups were successful
     if [ "$SLACK_ENABLED" = "true" ]; then
         /slack-alert.sh "All database backups successfully completed on database host $TARGET_DATABASE_HOST."
     fi
+
+    if [ "$MAX_FILES_TO_KEEP" -gt 0 ]; then
+        # Delete files when MAX_FILES_TO_KEEP is greater than zero
+
+        deleted_files=0
+        if [ "$BACKUP_PROVIDER" = "aws" ]; then
+            num_files=$(aws $ENDPOINT s3 ls s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/ | wc -l)
+            while [ $num_files -gt $MAX_FILES_TO_KEEP ]
+            do
+                oldest_file=$(aws $ENDPOINT s3 ls s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/ | head -n 1 | awk '{print $4}')
+                aws $ENDPOINT s3 rm s3://$AWS_BUCKET_NAME$AWS_BUCKET_BACKUP_PATH/$oldest_file
+                num_files=$(($num_files - 1))
+                deleted_files=$(($deleted_files + 1))
+            done
+        fi
+
+        if [ "$BACKUP_PROVIDER" = "gcp" ]; then
+            num_files=$(gsutil ls gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/ | wc -l)
+            while [ $num_files -gt $MAX_FILES_TO_KEEP ]
+            do
+                oldest_file=$(gsutil ls -l gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/ | sort -k2,1 | head -n 2 | tail -n 1 | awk '{print $NF}')
+                oldest_file=$(basename $oldest_file)
+                gsutil rm gs://$GCP_BUCKET_NAME$GCP_BUCKET_BACKUP_PATH/$oldest_file
+                num_files=$(($num_files - 1))
+                deleted_files=$(($deleted_files + 1))
+            done
+        fi
+
+        echo -e "Number of deleted files: $deleted_files"
+    fi
+
 
     exit 0
 

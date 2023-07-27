@@ -16,6 +16,7 @@ RUN apk -v --update add \
     gnupg \
     coreutils \
     gzip \
+    tar \
     go \
     git && \
     pip3 install --upgrade awscli s3cmd python-magic && \
@@ -30,6 +31,7 @@ ENV CLOUD_SDK_VERSION=367.0.0
 # Release commit for https://github.com/FiloSottile/age/tree/v1.0.0
 ENV AGE_VERSION=552aa0a07de0b42c16126d3107bd8895184a69e7
 ENV BACKUP_PROVIDER=aws
+ENV MAX_FILES_TO_KEEP=0
 
 # Install FiloSottile/age (https://github.com/FiloSottile/age)
 RUN git clone https://filippo.io/age && \
