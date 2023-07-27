@@ -42,6 +42,7 @@ The below table lists all of the Environment Variables that are configurable for
 | SLACK_CHANNEL                    | **(Required if Slack enabled)** Slack Channel the WebHook is configured for.                                                                                                                                                                          |
 | SLACK_PROXY                    | **(Optional)** Proxy URL if Slack is behind proxy.                                                                                                                                                                         |
 | SLACK_WEBHOOK_URL                | **(Required if Slack enabled)** What is the Slack WebHook URL to post to? Should be configured using a Secret in Kubernetes.                                                                                                                          |
+| MAX_FILES_TO_KEEP                | **(Optional - default `0`)**  How many backups to keep in the S3 or GCP Bucket. (0 will keep  all files)                                                                                                                                                                                             |
 
 
 ## Slack Integration
@@ -146,6 +147,8 @@ spec:
                      key: database_password
               - name: BACKUP_TIMESTAMP
                 value: "_%Y_%m_%d"
+              - name: MAX_FILES_TO_KEEP
+                value: "70"
               - name: SLACK_ENABLED
                 value: "<true/false>"
               - name: SLACK_CHANNEL
